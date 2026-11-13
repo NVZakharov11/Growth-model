@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Рычаги роста — план объёма 2027</title>
+<style>
+:root{
+  --bg:#121211; --panel:#1a1a19; --panel2:#222220; --line:#2c2c2a; --axis:#383835;
+  --ink:#f0efec; --ink2:#d6d5cc; --mute:#aeada4;
+  --base:#5d5c57; --org:#8a897f;
+  --akb:#199e70; --prod:#d55181; --sku:#c98500;
+  --plan:#f0efec; --focus:#86b6ef;
+  --font:"Segoe UI Variable Display","SF Pro Display","Helvetica Neue","Inter",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 var(--font);font-feature-settings:"tnum" 1,"lnum" 1;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:6px}
+.app{max-width:1560px;margin:0 auto;padding:20px 24px 60px}
+
+/* header */
+.top{display:flex;gap:16px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;padding-bottom:16px}
+.top h1{margin:0;font-size:22px;font-weight:600;letter-spacing:-.01em}
+.top .sub{color:var(--mute);margin-top:2px;max-width:70ch}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{background:var(--panel2);border:1px solid var(--axis);border-radius:8px;padding:7px 12px;color:var(--ink2);transition:background .15s,border-color .15s}
+.btn:hover{background:#2a2a28;border-color:#4a4a46;color:var(--ink)}
+.btn.sm{padding:3px 9px;font-size:12px}
+.presets{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 16px}
+.presets .lbl{color:var(--mute);margin-right:4px}
+.chip{border:1px solid var(--axis);background:transparent;color:var(--ink2);border-radius:999px;padding:4px 12px;font-size:13px}
+.chip:hover{border-color:#5a5a55;color:var(--ink)}
+.chip[aria-pressed=true]{background:var(--ink);color:#141413;border-color:var(--ink)}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(300px,420px) 1fr;gap:28px;align-items:stretch;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:26px 28px;margin-bottom:20px}
+.hero .lab{color:var(--mute)}
+.big{font-size:clamp(54px,6.4vw,92px);font-weight:200;letter-spacing:-.045em;line-height:.95;margin:6px 0 2px}
+.big small{font-size:.28em;font-weight:400;letter-spacing:0;color:var(--ink2);margin-left:6px}
+.delta-line{display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;font-size:20px;font-weight:500}
+.delta-line .pct{color:var(--ink2);font-weight:400}
+.from{display:flex;gap:22px;margin-top:20px;color:var(--ink2);flex-wrap:wrap}
+.from b{display:block;color:var(--ink);font-size:18px;font-weight:500}
+.split{display:flex;height:10px;border-radius:5px;overflow:hidden;gap:2px;margin-top:18px;background:var(--panel2)}
+.split i{display:block;height:100%}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:12.5px;color:var(--ink2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend em{width:9px;height:9px;border-radius:3px;display:inline-block}
+#wf{width:100%;height:auto;display:block}
+
+/* layout */
+.main{display:grid;grid-template-columns:372px minmax(0,1fr);gap:20px;align-items:start}
+.main>main{min-width:0}
+.drawer .mixrow{grid-template-columns:170px 1fr 40px}
+.rail{position:sticky;top:12px;display:flex;flex-direction:column;gap:12px;max-height:calc(100vh - 24px);overflow:auto;padding-right:4px;scrollbar-width:thin;scrollbar-color:#3a3a37 transparent}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.card h3{margin:0 0 2px;font-size:15px;font-weight:600}
+.card .hint{color:var(--mute);font-size:12.5px;margin:0 0 10px}
+.lever{position:relative;padding-left:20px}
+.lever::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:4px;border-radius:0 3px 3px 0;background:var(--c)}
+.lever .head{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.gain{font-size:22px;font-weight:300;letter-spacing:-.02em;white-space:nowrap}
+.gain small{font-size:12px;color:var(--mute);margin-left:4px;font-weight:400;letter-spacing:0}
+.row{display:flex;align-items:center;gap:10px;margin:8px 0}
+.row .k{flex:0 0 auto;color:var(--ink2);min-width:0}
+.row .v{margin-left:auto;font-weight:600;min-width:52px;text-align:right}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;margin-top:8px;color:var(--ink2);font-size:12.5px}
+.facts b{color:var(--ink);font-weight:500}
+.seg{display:inline-flex;background:var(--panel2);border:1px solid var(--axis);border-radius:8px;padding:2px;gap:2px}
+.seg button{border:0;background:transparent;padding:4px 10px;border-radius:6px;color:var(--ink2);font-size:12.5px}
+.seg button[aria-pressed=true]{background:var(--ink);color:#141413}
+
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:22px;background:transparent;--p:0%;--c:var(--ink2);margin:0}
+input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:linear-gradient(90deg,var(--c) var(--p),#33332f var(--p))}
+input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:#33332f}
+input[type=range]::-moz-range-progress{height:6px;border-radius:3px;background:var(--c)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#f0efec;border:3px solid var(--bg);box-shadow:0 0 0 2px var(--c);margin-top:-7px}
+input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#f0efec;border:3px solid var(--bg);box-shadow:0 0 0 2px var(--c)}
+input[type=number],input[type=search],input[type=text],textarea{background:var(--panel2);border:1px solid var(--axis);border-radius:8px;padding:6px 9px;color:var(--ink);width:100%}
+input[type=number]{width:96px;text-align:right}
+label.chk{display:flex;gap:8px;align-items:center;color:var(--ink2);cursor:pointer}
+input[type=checkbox]{accent-color:#86b6ef;width:16px;height:16px}
+.fos{display:flex;flex-wrap:wrap;gap:6px}
+.fos .chip{padding:2px 10px;font-size:12.5px}
+
+.mix{display:flex;flex-direction:column;gap:2px;margin-top:4px}
+.mixrow{display:grid;grid-template-columns:128px 1fr 40px;gap:8px;align-items:center}
+.mixrow .nm{font-size:12.5px;color:var(--ink2);line-height:1.15}
+.mixrow .nm i{display:block;font-style:normal;color:var(--mute);font-size:11.5px}
+.mixrow .pv{text-align:right;font-weight:600;font-size:12.5px}
+.mixrow .tick{position:relative}
+.mixrow .tick::after{content:"";position:absolute;left:var(--cur);top:2px;height:18px;width:2px;background:var(--ink);opacity:.55;pointer-events:none;border-radius:1px}
+
+.leaders{margin:6px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:2px}
+.leaders li button{width:100%;display:grid;grid-template-columns:1fr auto auto;gap:10px;background:transparent;border:0;padding:4px 6px;border-radius:6px;text-align:left;color:var(--ink2);font-size:12.5px}
+.leaders li button:hover{background:var(--panel2);color:var(--ink)}
+.leaders .n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.leaders b{color:var(--ink);font-weight:600}
+
+/* content */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:14px;flex-wrap:wrap}
+.tabs button{background:transparent;border:0;border-bottom:2px solid transparent;padding:9px 14px;color:var(--mute);font-weight:500;margin-bottom:-1px}
+.tabs button[aria-selected=true]{color:var(--ink);border-color:var(--ink)}
+.tabs button:hover{color:var(--ink)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:10px;margin-bottom:14px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.stat .l{color:var(--ink2);font-size:13px}
+.stat .n{font-size:22px;font-weight:300;letter-spacing:-.02em}
+.stat .n small{display:block;margin-top:1px;font-size:14px;color:var(--ink2);font-weight:400;letter-spacing:0}
+.stat .n small.aft{color:var(--ink);font-weight:500}
+.toolbar{display:flex;gap:10px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+.toolbar input[type=search]{max-width:280px}
+.tablewrap{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:auto;max-height:70vh}
+@media (max-width:1100px){table{min-width:900px}}
+table{border-collapse:separate;border-spacing:0;width:100%;font-size:12.5px;table-layout:fixed}
+th{position:sticky;top:0;background:#1f1f1d;text-align:right;font-weight:500;color:var(--ink2);padding:9px 6px;border-bottom:1px solid var(--axis);white-space:nowrap;cursor:pointer;user-select:none;z-index:1}
+th:first-child,td:first-child{text-align:left}
+th.l,td.l{text-align:left}
+th:hover{color:var(--ink)}
+th[aria-sort=descending]::after{content:" ↓"}
+th[aria-sort=ascending]::after{content:" ↑"}
+td{padding:6px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap;vertical-align:top}
+td .s2{display:block;font-size:12px;color:var(--ink2);line-height:1.25}
+td .s2.pos{color:#7fd9b4}
+td.nm{white-space:normal}
+td.nm .t{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+tbody tr{cursor:pointer}
+tbody tr.out td{opacity:.42}
+tbody tr:hover td{background:#20201e}
+td .reg{display:block;color:var(--ink2);font-size:12px}
+th:first-child,td:first-child{padding-left:12px}
+.muted{color:var(--mute)}
+.pos{color:#7fd9b4}
+.mini{display:inline-flex;height:8px;width:90px;border-radius:2px;overflow:hidden;gap:1px;background:var(--panel2);vertical-align:middle}
+.mini i{display:block;height:100%}
+.noy{color:#e0a03a}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:14px}
+.panel h3{margin:0 0 2px;font-size:15px}
+.panel .hint{color:var(--mute);font-size:12.5px;margin:0 0 12px;max-width:90ch}
+.bars{display:flex;flex-direction:column;gap:6px}
+.brow{display:grid;grid-template-columns:190px 1fr 120px;gap:10px;align-items:center}
+.brow .nm{font-size:13px;color:var(--ink2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.brow .val{font-size:12.5px;text-align:right;color:var(--ink2)}
+.brow .val b{color:var(--ink);font-weight:600}
+.track{display:flex;height:16px;gap:2px;background:transparent}
+.track i{display:block;height:100%;min-width:0}
+.track i:first-child{border-radius:3px 0 0 3px}
+.track i:last-child{border-radius:0 3px 3px 0}
+#scatter{width:100%;height:auto;display:block}
+.pie{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+/* drawer */
+.drawer{position:fixed;top:0;right:0;height:100vh;width:min(520px,100vw);background:var(--panel);border-left:1px solid var(--axis);transform:translateX(102%);transition:transform .25s ease;z-index:30;display:flex;flex-direction:column;box-shadow:-30px 0 60px rgba(0,0,0,.45)}
+.drawer.open{transform:none}
+.drawer header{padding:16px 20px 12px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px}
+.drawer h2{margin:0;font-size:18px;font-weight:600}
+.drawer .body{padding:14px 20px 30px;overflow:auto;flex:1}
+.drawer h4{margin:18px 0 6px;font-size:13.5px;font-weight:600}
+.dgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.dgrid div{background:var(--panel2);border-radius:10px;padding:8px 10px}
+.dgrid .l{color:var(--mute);font-size:12px}
+.dgrid .n{font-size:18px;font-weight:400}
+.ovrow{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;margin:6px 0}
+.addlist{display:flex;flex-direction:column;gap:2px;font-size:12.5px}
+.addlist div{display:grid;grid-template-columns:1fr auto auto;gap:10px;padding:4px 0;border-bottom:1px solid var(--line);color:var(--ink2)}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .2s;z-index:20}
+.scrim.on{opacity:1;pointer-events:auto}
+#tip{position:fixed;z-index:50;pointer-events:none;background:#0d0d0c;border:1px solid var(--axis);border-radius:8px;padding:8px 10px;font-size:12.5px;max-width:300px;opacity:0;transition:opacity .08s;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+#tip b{font-weight:600}
+dialog{background:var(--panel);color:var(--ink);border:1px solid var(--axis);border-radius:14px;padding:20px;width:min(560px,92vw)}
+dialog::backdrop{background:rgba(0,0,0,.6)}
+dialog textarea{height:180px;font-size:12.5px}
+.note{color:var(--mute);font-size:12.5px}
+.tog{display:inline-flex;align-items:center;gap:8px;margin:2px 0 6px;padding:3px 12px 3px 4px;border-radius:999px;border:1px solid var(--c);background:transparent;color:var(--ink);font-size:12.5px}
+.tog i{width:30px;height:18px;border-radius:9px;background:var(--c);position:relative;transition:background .15s}
+.tog i::after{content:"";position:absolute;top:2px;left:14px;width:14px;height:14px;border-radius:50%;background:#141413;transition:left .15s}
+.tog[aria-checked=false]{border-color:var(--axis);color:var(--mute)}
+.tog[aria-checked=false] i{background:#3a3a37}
+.tog[aria-checked=false] i::after{left:2px;background:#8a897f}
+.lever.off>*:not(.head):not(.tog){opacity:.38}
+.lever.off .gain{color:var(--mute)}
+.lever[data-lv=akb]{--c:var(--akb)}.lever[data-lv=prod]{--c:var(--prod)}.lever[data-lv=sku]{--c:var(--sku)}
+.legend span.offl{opacity:.35;text-decoration:line-through}
+[hidden]{display:none!important}
+.help{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.help .panel{margin:0}
+.help .wide{grid-column:1/-1}
+.help h3{font-size:16px;margin-bottom:8px}
+.help p{margin:6px 0;color:var(--ink2);max-width:75ch}
+.help ol,.help ul{margin:6px 0 0;padding-left:20px;color:var(--ink2)}
+.help li{margin:5px 0;max-width:75ch}
+.help b{color:var(--ink);font-weight:600}
+.help .eq{background:var(--panel2);border-radius:8px;padding:8px 10px;margin:8px 0;color:var(--ink);font-size:13px}
+.help .sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
+.help dl{margin:6px 0 0;display:grid;grid-template-columns:150px 1fr;gap:6px 14px}
+.help dt{color:var(--ink);font-weight:600}
+.help dd{margin:0;color:var(--ink2)}
+@media (max-width:1100px){.help{grid-template-columns:1fr}.help dl{grid-template-columns:1fr}}
+
+@media (max-width:1100px){
+  .hero{grid-template-columns:1fr}
+  .main{grid-template-columns:1fr}
+  .rail{position:static;max-height:none;overflow:visible}
+  .brow{grid-template-columns:130px 1fr 96px}
+  .pie{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div>
+      <h1>Рычаги роста: план объёма на 2027</h1>
+      <div class="sub">База — факт янв–окт 2026, приведённый к году. Три рычага по порядку расчёта: сколько точек возим, какие продукты везём, сколько SKU на точку. Всё считается по дистрибьюторам и складывается в итог.</div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="btnOkb">Загрузить ОКБ</button>
+      <button class="btn" id="btnCsv">Скачать таблицу (CSV)</button>
+      <button class="btn" id="btnReset">Сбросить всё</button>
+    </div>
+  </div>
+
+  <div class="presets" id="presets"><span class="lbl">Сценарии:</span></div>
+
+  <section class="hero" aria-live="polite">
+    <div>
+      <div class="lab">План 2027, тонн</div>
+      <div class="big"><span id="hPlan">—</span><small>т</small></div>
+      <div class="delta-line"><span id="hDelta">—</span><span class="pct" id="hPct"></span></div>
+      <div class="from">
+        <div>Факт янв–окт 2026<b id="hYtd">—</b></div>
+        <div>База 2026, год<b id="hBase">—</b></div>
+        <div>В охвате рычагов<b id="hScope">—</b></div>
+      </div>
+      <div class="split" id="hSplit"></div>
+      <div class="legend">
+        <span data-lg="akb"><em style="background:var(--akb)"></em>АКБ</span>
+        <span data-lg="prod"><em style="background:var(--prod)"></em>Продукты в АКБ</span>
+        <span data-lg="sku"><em style="background:var(--sku)"></em>SKU на точку</span>
+        <span><em style="background:var(--org)"></em>Органика</span>
+      </div>
+    </div>
+    <div><svg id="wf" viewBox="0 0 760 330" role="img" aria-label="Ступени роста от базы 2026 к плану 2027"></svg></div>
+  </section>
+
+  <div class="main">
+    <aside class="rail" aria-label="Рычаги">
+      <div class="card">
+        <h3>Что считаем</h3>
+        <div class="row"><span class="k">Годовой коэффициент</span><span class="v" id="vK">1,20</span></div>
+        <input type="range" id="rK" min="1" max="1.4" step="0.01" value="1.2" aria-label="Годовой коэффициент">
+        <div class="note" style="margin-top:-2px">1,20 = 12 месяцев / 10 месяцев данных (янв–окт)</div>
+        <div class="row"><span class="k">Органика без рычагов</span><span class="v" id="vOrg">0%</span></div>
+        <input type="range" id="rOrg" min="-10" max="30" step="1" value="0" aria-label="Органический рост">
+        <div class="row" style="margin-top:10px"><span class="k">Округ дистра: показать и применить рычаги</span></div>
+        <div class="fos" id="fos"></div>
+        <div class="row"><span class="k">Мин. АКБ дистра</span><span class="v" id="vMin">0</span></div>
+        <input type="range" id="rMin" min="0" max="500" step="10" value="0" aria-label="Минимальный АКБ">
+        <label class="chk"><input type="checkbox" id="cOnlyOkb"> только дистры с известным ОКБ</label>
+      </div>
+
+      <div class="card lever" data-lv="akb" style="--c:var(--akb)">
+        <div class="head"><h3>1. Охват: больше точек (АКБ)</h3><div class="gain" id="g1">—</div></div>
+        <button class="tog" data-lv="akb" role="switch" aria-checked="true"><i></i><span>Включён</span></button>
+        <p class="hint">Объём растёт пропорционально АКБ по всем продуктам, которые дистр возит сейчас.</p>
+        <div class="seg" id="seg1" role="group" aria-label="Режим"><button data-m="mult" aria-pressed="true">Кратно текущему</button><button data-m="share" aria-pressed="false">Цель: доля от ОКБ</button></div>
+        <div id="l1mult">
+          <div class="row"><span class="k">АКБ после</span><span class="v" id="vMult">×1,00</span></div>
+          <input type="range" id="rMult" min="1" max="3" step="0.05" value="1" aria-label="Кратность АКБ">
+        </div>
+        <div id="l1share" hidden>
+          <div class="row"><span class="k">Доля АКБ от ОКБ</span><span class="v" id="vShare">выкл.</span></div>
+          <input type="range" id="rShare" min="0" max="100" step="1" value="0" aria-label="Целевая доля от ОКБ">
+          <div class="note">Дистры с долей выше цели не трогаем. Без ОКБ цель не считается.</div>
+        </div>
+        <label class="chk" style="margin-top:8px"><input type="checkbox" id="cCap" checked> не выше ОКБ дистра</label>
+        <div class="facts" id="f1"></div>
+      </div>
+
+      <div class="card lever" data-lv="prod" style="--c:var(--prod)">
+        <div class="head"><h3>2. Продукты в АКБ</h3><div class="gain" id="g3">—</div></div>
+        <button class="tog" data-lv="prod" role="switch" aria-checked="true"><i></i><span>Включён</span></button>
+        <p class="hint">Какой доле АКБ дистр должен возить продукт. «Прочее» тут нет: это набор разных позиций. Тик — сколько сейчас в среднем по сети. Дистры выше цели остаются как есть.</p>
+        <div class="mix" id="mix"></div>
+        <div class="note" style="margin-top:8px">Новый продукт добавляет и SKU на точку. Рычаг 3 (SKU) считает только то, что осталось сверх.</div>
+      </div>
+
+      <div class="card lever" data-lv="sku" style="--c:var(--sku)">
+        <div class="head"><h3>3. Ширина: SKU на точку</h3><div class="gain" id="g2">—</div></div>
+        <button class="tog" data-lv="sku" role="switch" aria-checked="true"><i></i><span>Включён</span></button>
+        <p class="hint">Считается последним, после АКБ и продуктов. Подтягиваем средний SKU на точку до цели. Новые SKU делятся по продуктам дистра пропорционально его объёму.</p>
+        <div class="row"><span class="k">Цель, SKU на точку</span><span class="v" id="vSku">выкл.</span></div>
+        <input type="range" id="rSku" min="1" max="4" step="0.05" value="1" aria-label="Цель по среднему SKU">
+        <div class="row" style="gap:6px;flex-wrap:wrap" id="skuBtns">
+          <button class="chip" data-t="med">до медианы</button><button class="chip" data-t="p75">до топ-25%</button><button class="chip" data-t="max">до лучшего</button><button class="chip" data-t="off">выкл.</button>
+        </div>
+        <div class="row"><span class="k">Отдача нового SKU от среднего</span><span class="v" id="vEff">100%</span></div>
+        <input type="range" id="rEff" min="20" max="100" step="5" value="100" aria-label="Отдача нового SKU">
+        <div class="facts" id="f2"></div>
+        <div class="note" style="margin-top:8px">Лучшие по SKU на точку (АКБ от 50):</div>
+        <ul class="leaders" id="leadSku"></ul>
+      </div>
+    </aside>
+
+    <main>
+      <div class="tabs" role="tablist" id="tabs">
+        <button role="tab" data-t="dist" aria-selected="true">Дистрибьюторы</button>
+        <button role="tab" data-t="reg" aria-selected="false">Регионы</button>
+        <button role="tab" data-t="prod" aria-selected="false">Продукты</button>
+        <button role="tab" data-t="map" aria-selected="false">Карта возможностей</button>
+        <button role="tab" data-t="help" aria-selected="false">Как работать</button>
+      </div>
+      <div id="statsCap" class="note" style="margin:0 0 8px"></div>
+      <div class="stats" id="stats"></div>
+      <div id="tab-dist">
+        
+        <div class="toolbar"><input type="search" id="q" placeholder="Найти дистра или регион" aria-label="Поиск"><span class="note" id="cnt"></span></div>
+        <div class="tablewrap"><table id="tbl"><thead></thead><tbody></tbody></table></div>
+      </div>
+      <div id="tab-map" hidden>
+        <div class="panel">
+          <h3>Где у дистров запас: доля ОКБ и SKU на точку</h3>
+          <div class="row" style="margin:0 0 6px"><div class="seg" id="mapView" role="group" aria-label="Режим карты"><button data-v="now">Сейчас</button><button data-v="after">После рычагов</button><button data-v="shift">Сдвиг</button></div></div>
+          <p class="hint" id="mapHint"></p>
+          <div class="note" id="mapSum" style="margin:-4px 0 8px;color:var(--ink2)"></div>
+          <svg id="scatter" viewBox="0 0 880 470" role="img" aria-label="Доля АКБ от ОКБ и средний SKU по дистрибьюторам"></svg>
+        </div>
+      </div>
+      <div id="tab-reg" hidden>
+        <div class="panel"><h3>Федеральные округа (регион точки)</h3><p class="hint">Прирост дистра раскладывается по регионам его точек пропорционально текущему объёму.</p><div class="bars" id="barsFo"></div></div>
+        <div class="panel"><h3>Регионы точек: топ-25 по приросту</h3><p class="hint" id="regHint"></p><div class="bars" id="barsReg"></div></div>
+      </div>
+      <div id="tab-help" hidden class="help">
+        <div class="panel wide"><h3>Что это за модель</h3>
+          <p>Модель отвечает на три вопроса: <b>за счёт чего</b> растить объём в 2027 году, <b>где</b> (в каких регионах) и <b>у кого</b> (у каких дистрибьюторов). Отправная точка — «база 2026»: факт январь–октябрь, умноженный на 12/10. Сверху вы видите итог: база → план 2027 и из чего складывается прирост.</p>
+          <p>Слева три рычага, справа результат по дистрибьюторам, регионам и продуктам. Двигаете ползунок — всё пересчитывается сразу.</p></div>
+
+        <div class="panel"><h3>С чего начать</h3>
+          <ol>
+            <li>Нажмите заготовку сценария («Осторожный», «Целевой», «Агрессивный») или оставьте «Без изменений» и двигайте рычаги сами.</li>
+            <li>В блоке «Что считаем» выберите, где применять рычаги: по федеральным округам, по минимальному АКБ дистра, только с известным ОКБ.</li>
+            <li>Двигайте рычаги 1, 2, 3. Число рядом с названием рычага — сколько тонн он добавляет. Рычаг можно выключить кнопкой «Включён» в его карточке: серая кнопка и «выкл.» значат, что он не учитывается.</li>
+            <li>Во вкладке «Дистрибьюторы» отсортируйте по приросту: сверху те, у кого рост даёт больше всего.</li>
+            <li>Нажмите на дистра, чтобы увидеть детали и задать ему свои цели.</li>
+            <li>Вкладка «Регионы» показывает, где вырастет объём, «Продукты» — какие продукты, «Карта возможностей» — как сдвинулись дистры.</li>
+            <li>Готовый вариант выгрузите кнопкой «Скачать таблицу (CSV)».</li>
+          </ol></div>
+
+        <div class="panel"><h3>Как читать экран</h3>
+          <dl>
+            <dt>Большое число</dt><dd>План 2027 в тоннах и прирост к базе.</dd>
+            <dt>Ступени справа</dt><dd>База → органика → АКБ → продукты → SKU → план. Цвета рычагов везде одинаковые:
+              <br><span class="sw" style="background:var(--akb)"></span>АКБ, <span class="sw" style="background:var(--prod)"></span>продукты, <span class="sw" style="background:var(--sku)"></span>SKU, <span class="sw" style="background:var(--org)"></span>органика.</dd>
+            <dt>Зелёная стрелка «→»</dt><dd>Значение в сценарии, слева от стрелки — сейчас.</dd>
+            <dt>Оранжевый «!» у ОКБ</dt><dd>АКБ дистра по данным больше его ОКБ из матрицы. ОКБ стоит проверить.</dd>
+            <dt>«нет» у ОКБ</dt><dd>ОКБ не найден. Внесите его в карточке дистра или кнопкой «Загрузить ОКБ».</dd>
+            <dt>Точка • у названия</dt><dd>Для дистра заданы свои допущения.</dd>
+          </dl></div>
+
+        <div class="panel wide"><h3>Три рычага: порядок расчёта</h3>
+          <p>Рычаги считаются строго по номерам: <b>1 → 2 → 3</b>. Каждый следующий опирается на результат предыдущего, поэтому одно и то же не складывается дважды. Каждый рычаг можно включить и выключить кнопкой «Включён / Выключен» в его карточке. Выключенный рычаг не даёт прироста и в итог не входит. Если подвинуть ползунок выключенного рычага, он включится сам.</p>
+          <p><span class="sw" style="background:var(--akb)"></span><b>1. Охват (АКБ)</b> — возим в большее число точек.</p>
+          <div class="eq">Новый АКБ = АКБ × множитель, или не меньше (целевая доля × ОКБ)<br>Прирост = объём дистра × (новый АКБ / старый АКБ − 1)</div>
+          <p>Пример: дистр возит в 200 точек при ОКБ 2 500, доля 8%. Множитель ×2 даёт 400 точек, доля 16%, объём по всем его продуктам растёт вдвое. Галочка «не выше ОКБ» не даёт вывести АКБ за пределы ОКБ дистра.</p>
+          <p><span class="sw" style="background:var(--prod)"></span><b>2. Продукты в АКБ</b> — продукт должен стоять в заданной доле точек. Считается на уже выросшем АКБ из рычага 1.</p>
+          <div class="eq">Прирост продукта = новый АКБ × (цель − текущая доля продукта) × объём продукта на точку</div>
+          <p>Пример: маскарпоне 30% означает, что дистр возит маскарпоне в 30% своих точек. Если сейчас 10%, добавляем 20% точек. Объём на точку берём у самого дистра, а если он продукт не возит, то среднее по сети. Дистры, у которых доля уже выше цели, остаются как есть. Тик на ползунке — текущая доля по сети. Новый продукт на точке добавляет и SKU, и это учитывается в рычаге 3.</p>
+          <p><span class="sw" style="background:var(--sku)"></span><b>3. Ширина (SKU на точку)</b> — на каждую точку возим больше позиций. Считается последним.</p>
+          <div class="eq">SKU после продуктов = текущий ср. SKU + SKU, которые уже добавил рычаг 2<br>Прирост = новый АКБ × (цель − SKU после продуктов) × объём на пару «точка × SKU» × отдача нового SKU</div>
+          <p>Пример: у дистра 1,3 SKU на точку, цель 2,0. Если рычаг 2 уже поднял его до 1,6, рычаг 3 добирает только 0,4. Кнопки «до медианы», «до топ-25%», «до лучшего» подставляют цель по реальным дистрам, у которых АКБ от 50 точек. Дистры, у которых SKU уже выше цели, не трогаем. «Отдача нового SKU» — какую часть среднего объёма даёт добавленная позиция. Новые SKU делятся по продуктам дистра пропорционально его текущему объёму.</p></div>
+
+        <div class="panel"><h3>Что значат показатели</h3>
+          <dl>
+            <dt>ОКБ</dt><dd>Общая клиентская база дистра: сколько точек он мог бы обслуживать. Берётся из матрицы АКБ + рынок.</dd>
+            <dt>АКБ</dt><dd>Активная клиентская база: число разных точек (id_tt_2), в которые дистр возит в данных.</dd>
+            <dt>Доля ОКБ</dt><dd>АКБ / ОКБ. Чем ниже, тем больше запас роста по охвату.</dd>
+            <dt>Ср. SKU</dt><dd>Среднее число разных SKU на одну точку дистра (как в вашей формуле для Power BI).</dd>
+            <dt>База, т</dt><dd>Факт янв–окт в тоннах × годовой коэффициент.</dd>
+            <dt>Органика</dt><dd>Рост без рычагов, ползунок «Органика без рычагов». По умолчанию 0%.</dd>
+          </dl></div>
+
+        <div class="panel"><h3>Что можно настроить</h3>
+          <ul>
+            <li><b>Годовой коэффициент.</b> По умолчанию 1,2 (12 месяцев / 10 месяцев данных).</li>
+            <li><b>Где применять.</b> Фильтр по ФО и минимальному АКБ. Дистры вне охвата остаются на базе.</li>
+            <li><b>Карточка дистра.</b> Своё ОКБ, свой АКБ после, своя цель по SKU и свои доли продуктов. Эти значения работают даже вне охвата общих рычагов. Кнопка «Убрать мои допущения» всё возвращает.</li>
+            <li><b>Переключатель Продукты / SKU</b> в карточке: доли продуктов в АКБ или список всех позиций дистра с объёмом и охватом точек.</li>
+            <li><b>Загрузить ОКБ.</b> Вставьте строки «Дистр; ОКБ» или «Дистр; Регион; ОКБ».</li>
+          </ul></div>
+
+        <div class="panel wide"><h3>Вкладки</h3>
+          <dl>
+            <dt>Плитки сверху</dt><dd>Показаны на всех вкладках, кроме этой. Считаются по выбранным округам дистров, а большой итог в шапке всегда по всей компании.</dd>
+            <dt>Дистрибьюторы</dt><dd>Таблица: клик по заголовку сортирует, поиск ищет по названию и региону. В каждой строке база, прирост по рычагам, план.</dd>
+            <dt>Регионы</dt><dd>Прирост по федеральным округам и по регионам точек, с числом точек рынка и объёмом рынка из матрицы. Прирост дистра раскладывается по его регионам пропорционально текущему объёму.</dd>
+            <dt>Продукты</dt><dd>База и прирост по каждому продукту и текущая глубина продукта в АКБ.</dd>
+            <dt>Карта возможностей</dt><dd>Каждый пузырь — дистр. По горизонтали ср. SKU, по вертикали доля ОКБ. Три режима: «Сейчас» (база), «После рычагов» (положение и объём плана, цвет — главный рычаг), «Сдвиг» (серый контур — было, закрашенный — стало, размер показывает рост объёма).</dd>
+          </dl></div>
+
+        <div class="panel wide"><h3>Что учесть при чтении цифр</h3>
+          <ul>
+            <li>Это сценарная модель: она показывает, сколько дал бы рост при заданных допущениях, а не прогноз того, что произойдёт.</li>
+            <li>Базу нельзя назвать прогнозом года. Это простая годовизация факта без сезонности.</li>
+            <li>У некоторых дистров АКБ из данных больше ОКБ из матрицы. Тогда доля выходит выше 100%, а при галочке «не выше ОКБ» рычаг АКБ для них не растёт. Сначала уточните ОКБ.</li>
+            <li>Один и тот же адрес у двух дистров считается дважды, поэтому сумма АКБ по всем дистрам — верхняя оценка числа уникальных точек.</li>
+            <li>Рычаги 1–3 не знают про ограничения мощностей, цены и спрос. Это оценка потенциала в тоннах.</li>
+          </ul></div>
+      </div>
+      <div id="tab-prod" hidden>
+        <div class="panel"><h3>Продукты: база и прирост по рычагам</h3><p class="hint">Прирост по АКБ и SKU делится по продуктам пропорционально объёму дистра, прирост по продуктам — это именно выбранные в рычаге 2 продукты.</p><div class="bars" id="barsProd"></div></div>
+        <div class="panel"><h3>Как глубоко продукт сидит в АКБ сейчас</h3><p class="hint">Доля АКБ, где дистр возит продукт, и средний объём продукта на точку за год. По этим цифрам считается рычаг 3.</p><div class="bars" id="barsPen"></div></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="Карточка дистрибьютора" aria-hidden="true">
+  <header><div><h2 id="dName"></h2><div class="note" id="dSub"></div></div><button class="btn sm" id="dClose">Закрыть</button></header>
+  <div class="body" id="dBody"></div>
+</aside>
+<div id="tip"></div>
+
+<dialog id="dlgOkb">
+  <h3 style="margin:0 0 6px">Загрузить ОКБ</h3>
+  <p class="note">Вставьте строки «Дистр; ОКБ» или «Дистр; Регион дистра; ОКБ». Разделитель — точка с запятой или Tab. Название берём как в data 1. Если у одного названия несколько регионов, укажите регион.</p>
+  <textarea id="okbText" placeholder="Продальянс ООО;Владимирская область;1200"></textarea>
+  <div class="row"><button class="btn" id="okbApply">Применить</button><button class="btn" id="okbClose">Закрыть</button><span class="note" id="okbRes"></span></div>
+</dialog>
+
+<script id="data" type="application/json">{"products":["Милетто","Творога для кондитеров","Продукт для сырников и блинов","Сметана","Прочее","FriendChef (творожные сыры)","Йогурт","Творог","Маскарпоне","Сухие ингредиенты","Моцарелла","Сливочное масло","Не определён"],"dist":[{"reg":"Воронежская область","name":"Продальянс ООО","fo":"ЦФО","okb":200.0,"mname":null,"how":"точно","kg":783980.2,"akb":133,"sku":2.218,"nsku":33,"p":{"5":[3803.5,47,1.17],"6":[405.0,13,1.692],"8":[36.0,6,1.0],"0":[14596.1,35,1.029],"2":[722400.0,52,1.654],"4":[20928.6,16,1.938],"3":[13703.0,25,1.4],"9":[2000.0,1,1.0],"7":[268.0,8,1.0],"1":[5840.0,8,1.875]},"tr":[[16,125,588030.8],[41,1,189042.0],[47,6,6887.4],[84,1,20.0]],"skus":[[103,448630.0,40],[104,269440.0,22],[21,14576.1,35],[111,12048.3,12],[140,11420.0,14],[136,6672.6,11],[118,4060.0,20],[101,3530.0,7],[105,2207.7,8],[238,2000.0,1],[71,1699.5,20],[68,1684.0,31],[102,1160.0,3],[132,1020.0,4],[67,942.0,9],[119,470.0,2],[81,420.0,4],[84,400.0,4],[117,270.0,4],[75,258.0,7],[110,255.0,4],[64,156.0,6],[80,150.0,1],[109,130.0,1],[168,108.0,6],[165,90.0,4],[77,66.0,1],[59,36.0,6],[166,33.0,3],[218,20.0,1],[69,10.0,1],[174,9.0,1],[170,9.0,2]]},{"reg":"Нижегородская область","name":"Свит Лайф Фудсервис ООО","fo":"ПФО","okb":2200.0,"mname":null,"how":"точно","kg":382473.43,"akb":3372,"sku":1.3565,"nsku":17,"p":{"5":[24976.0,1098,1.005],"6":[46357.0,906,1.158],"8":[443.5,110,1.0],"0":[117565.8,1317,1.117],"2":[100.0,1,1.0],"4":[48479.48,242,1.07],"3":[171.0,57,1.0],"7":[8470.0,18,1.0],"1":[135910.65,427,1.183]},"tr":[[7,93,9670.8],[13,46,2113.5],[38,254,27718.36],[41,1,16.5],[46,3,1994.0],[51,231,26430.2],[54,126,12077.0],[55,8,2070.6],[58,864,134818.89],[63,1,33.0],[64,167,12900.0],[70,16,1141.4],[71,49,2615.8],[72,83,6314.2],[81,844,80833.88],[88,214,24886.1],[96,372,36839.2]],"skus":[[101,112820.72,388],[21,85291.8,1140],[20,32274.0,331],[65,31586.0,815],[105,30507.68,187],[102,23089.93,117],[68,23066.0,1072],[111,17971.8,72],[168,11906.0,153],[69,8470.0,18],[174,1941.0,45],[81,1910.0,32],[173,924.0,36],[59,413.5,109],[77,171.0,57],[107,100.0,1],[60,30.0,1]]},{"reg":"Московская область","name":"Свит Лайф Фудсервис ООО (Москва)","fo":"ЦФО","okb":10000.0,"mname":"Свит Лайф Фудсервис ООО (Москва) мелкая хорека","how":"по префиксу","kg":339422.97,"akb":2897,"sku":1.2879,"nsku":13,"p":{"5":[17469.0,725,1.0],"6":[78285.9,861,1.177],"8":[3644.5,74,1.0],"0":[88756.8,1052,1.1],"2":[7450.0,1,1.0],"4":[33138.3,91,1.0],"3":[7178.0,233,1.0],"1":[103500.47,437,1.0]},"tr":[[13,253,17862.0],[16,161,16272.2],[27,174,21817.6],[33,85,7054.7],[40,95,9276.9],[46,574,54099.0],[47,35,1166.2],[55,1173,184343.54],[57,1,26.4],[58,8,847.2],[59,23,1818.34],[63,12,335.7],[70,63,2133.6],[72,1,116.0],[80,68,5062.5],[81,3,179.0],[84,93,8723.2],[96,1,20.0],[99,74,8268.9]],"skus":[[101,103500.47,437],[21,69121.8,899],[65,58617.0,786],[105,33138.3,91],[20,19635.0,258],[68,17469.0,725],[168,17145.9,144],[117,7450.0,1],[77,7178.0,233],[60,3480.0,1],[174,1827.0,49],[173,696.0,34],[59,164.5,73]]},{"reg":"Самарская область","name":"Новиков А.С. ИП","fo":"ПФО","okb":120.0,"mname":"Новиков А.С. ИП B2B","how":"по префиксу","kg":321981.0,"akb":103,"sku":3.1359,"nsku":35,"p":{"5":[3958.1,34,1.147],"6":[4368.0,26,3.385],"8":[126.0,10,1.0],"0":[33136.4,30,1.167],"10":[240.0,3,1.0],"2":[45835.0,29,1.586],"4":[13909.5,17,1.118],"3":[17807.0,22,1.136],"7":[1841.0,7,1.143],"1":[200760.0,34,1.471]},"tr":[[7,3,58774.1],[62,2,174.0],[71,97,258032.9],[88,1,5000.0]],"skus":[[132,89940.0,12],[102,60370.0,18],[101,47970.0,15],[118,33820.0,13],[21,28050.0,30],[130,12590.0,2],[111,7319.4,15],[105,6590.1,4],[107,5230.0,5],[20,4976.4,4],[108,3537.0,19],[135,3005.0,16],[109,2480.0,5],[117,2430.0,7],[68,2417.0,32],[56,1790.0,5],[67,1593.0,3],[57,1541.1,7],[149,1280.0,2],[64,1086.0,21],[65,1056.0,3],[168,504.0,12],[174,486.0,12],[170,414.0,11],[173,249.0,7],[172,246.0,9],[216,240.0,3],[166,234.0,8],[59,126.0,10],[24,110.0,1],[171,93.0,5],[110,87.0,1],[134,60.0,2],[75,51.0,3],[103,10.0,1]]},{"reg":"Нижегородская область","name":"ООО \"ТРИЭР-НИЖНИЙ НОВГОРОД\"","fo":"ПФО","okb":550.0,"mname":null,"how":"точно","kg":301169.7,"akb":19,"sku":2.2105,"nsku":13,"p":{"5":[385.0,2,1.0],"6":[933.0,4,1.0],"2":[2360.0,3,1.0],"4":[24847.7,6,1.167],"3":[11434.0,6,1.0],"7":[11420.0,3,1.0],"1":[249790.0,14,1.214]},"tr":[[57,19,301169.7]],"skus":[[101,150960.0,13],[132,98830.0,4],[111,23816.1,2],[130,11380.0,5],[56,11350.0,2],[103,2360.0,3],[105,1029.6,4],[64,921.0,3],[68,385.0,2],[78,70.0,1],[77,54.0,1],[65,12.0,1],[72,2.0,1]]},{"reg":"Рязанская область","name":"Исаева Е.В. ИП","fo":"ЦФО","okb":30.0,"mname":null,"how":"точно","kg":296543.2,"akb":146,"sku":2.4726,"nsku":27,"p":{"5":[2494.8,15,1.067],"6":[8370.0,34,3.618],"8":[3.0,1,1.0],"0":[10477.1,36,1.111],"2":[241390.0,63,1.571],"4":[5442.3,3,1.0],"3":[783.0,4,1.0],"7":[6043.0,50,1.18],"1":[21540.0,15,1.067]},"tr":[[55,54,15456.7],[57,1,3.0],[70,87,279085.0],[84,4,1998.5]],"skus":[[103,207860.0,55],[149,19880.0,23],[101,19840.0,15],[107,10600.0,5],[20,9681.8,15],[75,5703.0,49],[58,3630.0,1],[135,3050.0,16],[57,2448.6,15],[168,2295.0,19],[174,2034.0,18],[170,1944.0,23],[105,1752.3,1],[102,1700.0,1],[21,792.0,24],[108,783.0,4],[166,597.0,18],[173,573.0,16],[172,555.0,15],[69,340.0,10],[64,312.0,1],[82,60.0,1],[71,46.2,1],[171,45.0,9],[165,15.0,4],[22,3.3,1],[59,3.0,1]]},{"reg":"Московская область","name":"Сытьковский молочный завод ООО","fo":"ЦФО","okb":500.0,"mname":"Сытьковский молочный завод ООО В2В","how":"по префиксу","kg":275955.81,"akb":148,"sku":1.5135,"nsku":30,"p":{"5":[21.78,1,1.0],"6":[26887.0,25,1.96],"8":[3.0,1,1.0],"0":[67518.03,57,1.105],"10":[410.0,3,1.333],"2":[30670.0,22,1.0],"4":[4.0,1,1.0],"3":[117445.0,24,1.167],"7":[7797.0,24,1.042],"1":[25200.0,26,1.154]},"tr":[[55,5,5391.17],[57,142,270555.64],[96,1,9.0]],"skus":[[80,66300.0,6],[24,49800.0,2],[67,46395.0,20],[118,22010.0,18],[132,20550.0,11],[64,20358.0,20],[21,10443.51,27],[75,7467.0,22],[20,7274.52,34],[103,7200.0,2],[174,5148.0,7],[140,4750.0,2],[109,2660.0,10],[102,1990.0,9],[107,1240.0,1],[65,589.0,3],[216,375.0,2],[170,351.0,6],[76,320.0,2],[149,220.0,1],[168,126.0,3],[172,126.0,3],[37,72.0,4],[173,63.0,2],[165,54.0,1],[62,35.0,2],[71,21.78,1],[87,10.0,1],[72,4.0,1],[59,3.0,1]]},{"reg":"Чувашская республика","name":"Час Пик ООО","fo":"ПФО","okb":800.0,"mname":"Час Пик ООО B2B","how":"по префиксу","kg":251718.25,"akb":112,"sku":1.5,"nsku":22,"p":{"5":[2726.8,4,1.0],"6":[72.0,1,2.0],"0":[3828.55,51,1.078],"10":[5.0,1,1.0],"4":[2550.9,8,1.0],"11":[1340.0,1,1.0],"3":[23705.0,38,1.237],"7":[180.0,2,1.0],"1":[217310.0,43,1.116]},"tr":[[51,16,1396.29],[96,96,250321.96]],"skus":[[102,206110.0,43],[130,15670.0,4],[132,8780.0,3],[110,6030.0,35],[71,2623.5,1],[111,2547.6,7],[101,2410.0,1],[20,2323.2,7],[108,1395.0,2],[86,1340.0,1],[21,1285.35,47],[140,610.0,6],[25,220.0,1],[56,180.0,2],[64,69.0,1],[61,60.0,1],[81,40.0,1],[109,10.0,1],[216,5.0,1],[57,3.3,1],[105,3.3,1],[168,3.0,1]]},{"reg":"Республика Крым","name":"Новая Жизнь ООО","fo":"ЮФО","okb":2800.0,"mname":null,"how":"точно","kg":221199.6,"akb":1327,"sku":1.7732,"nsku":43,"p":{"5":[43874.0,747,1.245],"6":[6269.0,97,1.67],"8":[993.5,36,1.139],"0":[42154.6,349,1.1],"2":[2010.0,18,1.167],"4":[7911.5,90,1.211],"11":[18.0,1,1.0],"3":[15786.0,403,1.342],"9":[15.0,1,1.0],"7":[848.0,33,1.091],"1":[101320.0,98,1.296]},"tr":[[21,4,84.5],[25,42,5356.1],[26,25,2722.9],[57,1,9.9],[68,1216,205743.8],[92,9,2595.7],[93,31,4686.7]],"skus":[[102,64700.0,62],[109,35750.0,63],[21,30195.0,296],[57,28353.6,350],[247,8566.8,205],[22,7114.8,61],[110,5967.0,184],[64,4638.0,52],[111,4293.3,21],[108,4002.0,133],[68,3995.0,353],[24,3670.0,22],[77,3144.0,173],[105,2983.2,32],[61,2490.0,19],[130,1820.0,7],[117,1590.0,15],[20,1174.8,5],[132,870.0,2],[67,723.0,43],[65,665.0,63],[240,609.0,5],[71,468.6,3],[75,438.0,28],[58,404.0,53],[149,400.0,5],[59,264.5,35],[79,250.0,6],[136,231.0,3],[172,228.0,9],[168,177.0,8],[174,174.0,8],[170,168.0,9],[56,160.0,2],[166,159.0,6],[140,130.0,1],[60,120.0,1],[173,36.0,3],[103,20.0,1],[230,18.0,1],[171,15.0,2],[223,15.0,1],[165,9.0,2]]},{"reg":"Краснодарский край","name":"Мир Сыров ООО","fo":"ЮФО","okb":1620.0,"mname":null,"how":"точно","kg":214849.3,"akb":275,"sku":1.6691,"nsku":50,"p":{"5":[10358.6,41,1.439],"6":[2235.0,37,2.243],"8":[1668.0,7,1.0],"0":[80694.9,154,1.091],"10":[7.0,4,1.0],"2":[34940.0,22,1.227],"4":[6705.8,11,1.182],"3":[22997.0,26,1.269],"9":[880.0,8,1.625],"7":[283.0,13,1.0],"1":[54080.0,32,1.219]},"tr":[[0,3,3674.1],[5,2,2805.0],[41,260,199336.8],[68,1,6.6],[69,1,2999.0],[76,1,3.0],[79,6,6011.9],[81,1,12.9]],"skus":[[21,74599.8,148],[102,29880.0,27],[132,23570.0,9],[103,16700.0,3],[80,10630.0,10],[104,8010.0,3],[140,7900.0,2],[134,6270.0,18],[81,5820.0,1],[20,5745.3,14],[67,4398.0,17],[105,3996.3,8],[118,3740.0,2],[61,1980.0,6],[60,1650.0,2],[57,1313.4,18],[111,1155.0,1],[136,940.5,2],[109,630.0,3],[82,610.0,1],[65,483.0,16],[247,468.6,10],[68,440.0,20],[174,336.0,8],[246,330.0,3],[24,330.0,4],[168,312.0,9],[170,291.0,10],[222,290.0,3],[75,273.0,12],[166,261.0,7],[231,240.0,3],[107,220.0,1],[223,210.0,6],[64,192.0,9],[172,186.0,16],[7,140.0,1],[173,90.0,4],[77,66.0,3],[171,45.0,3],[165,39.0,1],[22,19.8,2],[236,10.0,1],[56,10.0,1],[216,7.0,4],[71,6.6,1],[59,5.0,3],[72,4.0,1],[110,3.0,1],[235,3.0,1]]},{"reg":"Минская область","name":"Фишфуд ООО","fo":"Вне карты","okb":3000.0,"mname":null,"how":"точно","kg":213844.2,"akb":1015,"sku":1.2808,"nsku":7,"p":{"5":[45531.0,517,1.0],"0":[111982.3,729,1.005],"4":[54690.9,48,1.0],"1":[1640.0,1,2.0]},"tr":[[9,99,11369.9],[12,100,16761.0],[17,85,10756.4],[18,78,6859.6],[52,590,164654.9],[53,51,2964.3],[57,12,478.1]],"skus":[[21,111804.0,726],[105,54690.9,48],[68,45531.0,517],[132,1320.0,1],[102,320.0,1],[23,175.0,6],[20,3.3,1]]},{"reg":"Ростовская область","name":"Кутейко В.Н. ИП","fo":"ЮФО","okb":150.0,"mname":null,"how":"точно","kg":198393.9,"akb":92,"sku":1.6957,"nsku":6,"p":{"5":[1680.0,46,1.0],"0":[9843.9,64,1.188],"2":[91980.0,10,1.0],"1":[94890.0,16,1.5]},"tr":[[20,13,26590.1],[21,5,79763.0],[41,2,112.2],[69,72,91928.6]],"skus":[[118,91980.0,10],[102,87470.0,15],[132,7420.0,9],[21,5946.6,62],[20,3897.3,14],[68,1680.0,46]]},{"reg":"Марий Эл республика","name":"НОКС ООО","fo":"ПФО","okb":230.0,"mname":"НОКС ООО В2В дистр","how":"по префиксу","kg":181215.2,"akb":107,"sku":3.6262,"nsku":26,"p":{"5":[10999.3,20,1.4],"6":[1923.0,6,1.5],"8":[70.5,4,1.0],"0":[81.0,4,1.25],"10":[30.0,4,1.0],"2":[67925.0,78,1.705],"4":[2303.4,2,1.0],"3":[63027.0,84,1.631],"7":[176.0,1,4.0],"1":[34680.0,44,1.409]},"tr":[[32,1,1821.0],[38,4,457.0],[51,102,178937.2]],"skus":[[134,44095.0,70],[140,25230.0,25],[102,25190.0,29],[108,17100.0,55],[130,14580.0,20],[117,12000.0,24],[103,10030.0,31],[101,9490.0,33],[110,6117.0,37],[81,5650.0,2],[57,3943.5,18],[111,2303.4,2],[107,1800.0,8],[247,1405.8,8],[170,1185.0,3],[168,732.0,4],[56,100.0,1],[59,70.5,4],[24,70.0,4],[83,50.0,1],[62,30.0,4],[69,20.0,1],[237,11.0,1],[75,6.0,1],[64,3.0,1],[174,3.0,1]]},{"reg":"Свердловская область","name":"Девон ТД ООО","fo":"УрФО","okb":2000.0,"mname":null,"how":"точно","kg":170397.3,"akb":362,"sku":1.0912,"nsku":16,"p":{"5":[79306.0,130,1.0],"6":[360.0,1,6.0],"0":[49823.3,167,1.072],"2":[24000.0,4,1.0],"4":[13938.0,75,1.0],"3":[2970.0,1,1.0]},"tr":[[43,8,1632.7],[65,7,2875.0],[75,267,152573.4],[77,1,13.2],[86,18,3626.8],[91,27,1367.0],[94,26,7106.6],[98,7,1146.5],[99,1,56.1]],"skus":[[68,79306.0,130],[21,37986.3,152],[117,24000.0,4],[111,12114.3,69],[20,9537.0,16],[119,2970.0,1],[24,2300.0,11],[72,1074.0,3],[105,689.7,2],[45,60.0,1],[165,60.0,1],[168,60.0,1],[170,60.0,1],[171,60.0,1],[172,60.0,1],[174,60.0,1]]},{"reg":"Калининградская область","name":"Технология ООО","fo":"СЗФО","okb":100.0,"mname":null,"how":"точно","kg":167604.94,"akb":52,"sku":1.4231,"nsku":5,"p":{"5":[10.89,1,1.0],"0":[7024.05,30,1.067],"3":[61500.0,15,1.0],"1":[99070.0,26,1.0]},"tr":[[31,51,167419.81],[57,1,185.13]],"skus":[[109,99070.0,26],[119,61500.0,15],[21,5161.86,27],[20,1862.19,5],[247,10.89,1]]},{"reg":"Башкортостан республика","name":"РайУфа ООО","fo":"ПФО","okb":1500.0,"mname":null,"how":"точно","kg":146184.8,"akb":473,"sku":1.8436,"nsku":19,"p":{"5":[2863.3,82,1.159],"6":[291.0,2,3.5],"0":[80664.5,392,1.487],"4":[60326.0,163,1.0],"3":[2040.0,18,1.333]},"tr":[[7,375,124848.1],[14,1,198.0],[32,1,33.0],[55,1,16.5],[57,2,158.4],[60,1,184.8],[62,25,4151.8],[65,6,1066.2],[71,1,258.8],[74,1,419.1],[75,2,134.0],[81,14,2283.8],[87,14,4861.0],[94,29,7571.3]],"skus":[[105,60126.0,161],[21,49882.8,306],[20,16186.5,115],[22,12685.2,134],[71,2643.3,64],[25,1910.0,28],[110,1041.0,14],[108,999.0,10],[82,200.0,2],[64,150.0,1],[166,120.0,1],[68,100.0,23],[61,90.0,6],[89,30.0,2],[173,9.0,1],[170,3.0,1],[171,3.0,1],[172,3.0,1],[174,3.0,1]]},{"reg":"Московская область","name":"Фишсити ТД ООО","fo":"ЦФО","okb":1000.0,"mname":"Фишсити ТД ООО япония- мелкие клиенты В и С","how":"по префиксу","kg":144003.4,"akb":212,"sku":1.5755,"nsku":12,"p":{"5":[2263.1,22,1.091],"6":[1842.0,4,1.0],"0":[94310.0,178,1.399],"4":[40098.3,53,1.038],"7":[5490.0,2,1.0]},"tr":[[8,1,267.3],[13,5,1506.6],[19,1,185.2],[30,1,240.0],[33,2,10935.0],[38,1,3980.0],[44,1,415.8],[55,172,87213.4],[58,1,231.0],[71,3,16731.0],[78,2,231.0],[82,11,19385.0],[84,4,656.2],[87,2,1284.5],[99,5,741.4]],"skus":[[111,37788.3,53],[24,33820.0,72],[21,30297.3,101],[20,30092.7,72],[78,5490.0,2],[105,2310.0,2],[81,1790.0,8],[65,1362.0,2],[64,480.0,2],[68,450.0,14],[218,100.0,4],[57,23.1,2]]},{"reg":"Самарская область","name":"Океан ООО","fo":"ПФО","okb":360.0,"mname":null,"how":"точно","kg":132267.3,"akb":629,"sku":1.2417,"nsku":8,"p":{"5":[2613.6,36,1.194],"0":[75834.0,478,1.138],"4":[53819.7,171,1.135]},"tr":[[1,7,5365.8],[6,3,8042.1],[7,90,16830.0],[24,5,4593.6],[38,9,4075.5],[50,1,115.5],[54,10,3834.6],[57,4,204.6],[58,1,102.3],[62,103,20248.8],[64,1,36.3],[71,260,38049.0],[72,19,4758.6],[81,38,8335.8],[84,1,19.8],[87,6,1692.9],[88,29,9005.7],[94,42,6956.4]],"skus":[[21,50968.5,383],[105,40972.8,131],[20,21407.1,122],[111,12846.9,63],[22,3458.4,39],[57,2412.3,32],[247,201.3,9],[61,0.0,2]]},{"reg":"Свердловская область","name":"Хорека Сервис ООО","fo":"УрФО","okb":2000.0,"mname":null,"how":"точно","kg":130407.6,"akb":285,"sku":1.1719,"nsku":9,"p":{"5":[66149.0,56,1.0],"6":[2957.0,56,1.0],"0":[59993.6,176,1.165],"2":[120.0,2,1.0],"4":[1188.0,15,1.0]},"tr":[[7,18,6192.4],[19,1,13.2],[38,1,4.0],[42,1,115.5],[43,7,314.3],[46,1,20.0],[55,3,2461.9],[60,1,3.3],[61,1,120.0],[62,2,2216.3],[65,9,721.3],[68,1,234.3],[75,167,109179.2],[79,1,5.0],[86,18,2647.0],[87,2,66.0],[91,8,618.2],[94,36,5201.9],[98,7,273.8]],"skus":[[68,66149.0,56],[21,45276.0,144],[20,7731.9,29],[24,6560.0,29],[65,2957.0,56],[111,792.0,2],[22,425.7,3],[58,396.0,13],[107,120.0,2]]},{"reg":"Московская область","name":"БРИГРО ООО","fo":"ЦФО","okb":null,"mname":"БРИГРО ООО В2В","how":"по префиксу","kg":127565.9,"akb":52,"sku":2.4615,"nsku":19,"p":{"6":[8797.0,6,4.667],"8":[223.5,3,1.0],"0":[8329.2,22,1.182],"2":[105970.0,39,1.385],"4":[1036.2,2,1.0],"1":[3210.0,11,1.364]},"tr":[[39,2,270.0],[55,50,127295.9]],"skus":[[118,82990.0,26],[149,15820.0,23],[21,7352.4,21],[103,7160.0,5],[109,3080.0,11],[41,1356.0,3],[43,1351.0,4],[44,1350.0,3],[39,1296.0,4],[37,1275.0,3],[36,1242.0,3],[111,1036.2,2],[20,976.8,5],[33,636.0,4],[64,255.0,3],[59,223.5,3],[102,110.0,2],[42,36.0,1],[132,20.0,2]]},{"reg":"Башкортостан республика","name":"СоюзПищепром ООО","fo":"ПФО","okb":1500.0,"mname":null,"how":"точно","kg":119503.83,"akb":406,"sku":1.5025,"nsku":25,"p":{"5":[1267.0,61,1.0],"6":[777.0,6,3.0],"8":[56.0,23,1.0],"0":[35670.13,251,1.044],"2":[46485.0,34,1.0],"4":[6497.7,18,1.0],"3":[9136.0,82,1.073],"9":[180.0,3,1.0],"7":[45.0,2,1.0],"1":[19390.0,85,1.188]},"tr":[[4,1,26.0],[7,379,115146.23],[57,1,13.2],[62,18,3027.8],[71,1,641.0],[81,2,23.3],[87,1,573.0],[88,1,20.0],[94,2,33.3]],"skus":[[21,29109.33,229],[107,28090.0,32],[134,18395.0,2],[109,16580.0,80],[140,7420.0,41],[20,6520.8,32],[105,6497.7,18],[102,2800.0,20],[68,1267.0,61],[67,996.0,46],[80,720.0,1],[41,312.0,2],[36,210.0,1],[7,180.0,3],[64,102.0,4],[166,57.0,2],[168,57.0,2],[59,56.0,23],[75,45.0,2],[24,40.0,1],[174,15.0,3],[172,12.0,2],[101,10.0,1],[171,6.0,1],[173,6.0,1]]},{"reg":"Ленинградская область","name":"Продстар ТД ООО","fo":"СЗФО","okb":null,"mname":null,"how":"точно","kg":116063.0,"akb":549,"sku":1.02,"nsku":5,"p":{"0":[23856.6,334,1.0],"4":[5273.4,1,1.0],"3":[144.0,1,1.0],"7":[69.0,2,1.0],"1":[86720.0,222,1.0]},"tr":[[36,10,1032.9],[46,530,114261.3],[55,1,3.3],[56,1,570.0],[59,6,185.5],[69,1,10.0]],"skus":[[101,86720.0,222],[21,23856.6,334],[111,5273.4,1],[67,144.0,1],[75,69.0,2]]},{"reg":"Коми республика","name":"Новый Склад ООО","fo":"СЗФО","okb":696.0,"mname":null,"how":"точно","kg":104729.6,"akb":184,"sku":1.6902,"nsku":8,"p":{"0":[14774.1,67,1.0],"2":[33210.0,81,1.0],"4":[1439.5,23,1.043],"3":[29736.0,110,1.036],"1":[25570.0,25,1.0]},"tr":[[4,6,210.6],[39,177,104489.0],[46,1,30.0]],"skus":[[103,33210.0,81],[109,25570.0,25],[110,21066.0,105],[21,14774.1,67],[140,8670.0,9],[111,841.5,1],[58,400.0,20],[105,198.0,3]]},{"reg":"Воронежская область","name":"Успех ООО","fo":"ЦФО","okb":2500.0,"mname":null,"how":"точно","kg":99742.7,"akb":945,"sku":1.7016,"nsku":31,"p":{"5":[10653.6,272,1.103],"6":[2293.0,98,1.031],"8":[365.5,62,1.081],"0":[41814.6,331,1.199],"10":[5.0,3,1.0],"2":[2901.0,12,1.083],"4":[10623.0,133,1.038],"3":[21744.0,358,1.123],"7":[4173.0,120,1.008],"1":[5170.0,66,1.0]},"tr":[[8,218,22418.7],[10,12,634.9],[14,10,719.6],[15,6,573.5],[16,395,35530.8],[33,5,11175.8],[41,1,660.0],[44,23,805.5],[47,239,23358.3],[63,5,235.3],[69,1,462.0],[80,25,2967.0],[84,5,201.3]],"skus":[[21,31290.6,273],[110,15843.0,268],[105,7286.4,36],[68,6709.0,196],[20,6015.9,56],[67,5841.0,132],[101,5080.0,65],[75,4143.0,120],[22,3488.1,55],[135,2250.0,10],[71,2032.8,41],[65,1942.0,98],[111,1739.1,15],[57,1306.8,49],[58,1161.0,79],[24,1020.0,13],[81,600.0,9],[118,550.0,1],[82,430.0,4],[59,353.5,62],[165,177.0,2],[168,174.0,1],[103,101.0,2],[109,90.0,1],[80,50.0,1],[83,30.0,1],[235,12.0,5],[84,10.0,1],[72,6.5,4],[70,5.0,5],[216,5.0,3]]},{"reg":"Иркутская область","name":"Элит Трейд ТД ООО","fo":"СФО","okb":2100.0,"mname":null,"how":"точно","kg":95775.0,"akb":1318,"sku":1.2731,"nsku":9,"p":{"5":[13544.0,463,1.0],"6":[9096.0,275,1.0],"8":[20751.5,17,1.059],"0":[30835.7,337,1.107],"4":[2032.8,4,1.0],"3":[19515.0,545,1.0]},"tr":[[11,34,1039.4],[29,1284,94735.6]],"skus":[[21,22364.1,295],[60,20260.0,11],[77,19515.0,545],[68,13544.0,463],[65,9096.0,275],[24,7970.0,41],[111,2032.8,4],[20,501.6,37],[59,491.5,7]]},{"reg":"Вологодская область","name":"Протасов Ю.Ю. ИП","fo":"СЗФО","okb":200.0,"mname":null,"how":"точно","kg":91708.1,"akb":265,"sku":1.6792,"nsku":23,"p":{"5":[1675.9,45,1.111],"6":[398.0,19,1.368],"8":[265.0,11,1.0],"0":[4926.9,42,1.095],"2":[27935.0,70,1.3],"4":[1401.3,14,1.0],"3":[14271.0,170,1.1],"9":[375.0,1,1.0],"7":[10.0,1,1.0],"1":[40450.0,18,1.0]},"tr":[[4,8,293.0],[15,253,90748.1],[36,3,648.0],[55,1,19.0]],"skus":[[102,37180.0,8],[103,15750.0,41],[134,12030.0,42],[108,10692.0,135],[132,3270.0,10],[20,2544.3,10],[21,2382.6,36],[119,2000.0,10],[77,1579.0,42],[105,1389.3,12],[57,640.2,10],[71,557.7,9],[68,478.0,31],[13,375.0,1],[59,265.0,11],[65,206.0,14],[135,155.0,8],[173,75.0,4],[170,60.0,4],[168,57.0,4],[58,10.0,1],[69,10.0,1],[72,2.0,1]]},{"reg":"Татарстан республика","name":"Гурман ООО","fo":"ПФО","okb":950.0,"mname":null,"how":"точно","kg":91113.2,"akb":134,"sku":1.4179,"nsku":12,"p":{"6":[45.0,5,1.0],"0":[1151.2,36,1.0],"2":[10875.0,66,1.0],"4":[490.0,2,1.0],"3":[63992.0,68,1.132],"9":[8370.0,2,1.0],"7":[6190.0,1,2.0]},"tr":[[7,2,790.9],[81,120,90060.7],[87,12,261.6]],"skus":[[108,54546.0,67],[135,10875.0,66],[130,8410.0,3],[223,8370.0,2],[69,5110.0,1],[21,1151.2,36],[56,1080.0,1],[119,630.0,4],[82,490.0,2],[140,400.0,2],[64,45.0,5],[110,6.0,1]]},{"reg":"Архангельская область","name":"Артмикс ООО","fo":"СЗФО","okb":325.0,"mname":null,"how":"точно","kg":87897.0,"akb":120,"sku":2.275,"nsku":21,"p":{"5":[877.8,6,1.333],"6":[75.0,3,2.0],"8":[1.0,1,1.0],"0":[8670.0,51,1.039],"2":[25330.0,27,1.074],"4":[2916.2,15,1.2],"3":[31187.0,81,1.358],"1":[18840.0,48,1.0]},"tr":[[4,118,85430.2],[46,1,610.0],[58,1,1856.8]],"skus":[[102,18820.0,47],[117,18300.0,21],[110,17280.0,68],[140,10660.0,20],[21,8497.5,47],[103,7030.0,8],[67,3207.0,21],[105,2613.6,11],[71,613.8,4],[111,270.6,4],[68,264.0,4],[24,90.0,1],[20,82.5,5],[172,45.0,2],[137,40.0,1],[168,24.0,3],[101,20.0,1],[72,18.0,2],[116,14.0,1],[166,6.0,1],[59,1.0,1]]},{"reg":"Кировская область","name":"Тебенькова М.А. ИП","fo":"ПФО","okb":850.0,"mname":"Тебенькова М.А. B2B","how":null,"kg":84496.5,"akb":567,"sku":1.3122,"nsku":23,"p":{"5":[14229.8,366,1.071],"6":[30.0,3,1.0],"8":[781.5,123,1.049],"0":[21473.1,114,1.0],"2":[3830.0,27,1.444],"4":[2536.1,16,1.125],"3":[34401.0,22,1.318],"9":[125.0,1,1.0],"1":[7090.0,15,1.267]},"tr":[[4,1,449.0],[38,535,67505.5],[39,27,10864.8],[57,1,0.5],[81,1,5086.0],[98,2,590.7]],"skus":[[140,29550.0,2],[21,21248.7,112],[68,8613.0,329],[102,6670.0,11],[57,5596.8,50],[110,4440.0,14],[111,2326.5,15],[107,2030.0,12],[135,1580.0,22],[108,411.0,13],[60,390.0,1],[59,379.5,121],[103,220.0,5],[132,220.0,4],[105,204.6,2],[101,200.0,4],[237,198.0,1],[238,125.0,1],[65,30.0,3],[20,26.4,1],[245,20.0,13],[235,12.0,7],[58,5.0,1]]},{"reg":"Калужская область","name":"Чернов В.А. ИП (Давыдов&К)","fo":"ЦФО","okb":560.0,"mname":null,"how":"точно","kg":80500.3,"akb":235,"sku":1.7234,"nsku":49,"p":{"5":[3391.6,13,1.462],"6":[2025.0,33,1.455],"8":[27.0,2,1.0],"0":[37056.3,106,1.123],"10":[911.0,8,1.125],"2":[18435.0,34,1.088],"4":[1892.6,27,1.222],"11":[19.8,2,1.0],"3":[3983.0,44,1.205],"9":[94.0,5,1.4],"7":[5215.0,51,1.235],"1":[7450.0,9,1.444]},"tr":[[10,1,1160.0],[33,209,66545.3],[55,2,2119.0],[84,23,10676.0]],"skus":[[20,22605.0,43],[118,14790.0,26],[21,13068.0,74],[75,3255.0,50],[102,3090.0,4],[57,2544.3,7],[67,1968.0,23],[101,1960.0,4],[117,1810.0,4],[58,1759.0,20],[104,1710.0,2],[64,1575.0,20],[27,1380.0,1],[109,1320.0,2],[83,1280.0,4],[130,920.0,2],[132,880.0,2],[140,720.0,2],[62,703.0,5],[78,640.0,6],[247,547.8,7],[77,345.0,25],[65,324.0,14],[68,250.0,4],[216,208.0,4],[113,200.0,1],[134,120.0,4],[73,72.5,7],[71,49.5,1],[211,44.0,4],[69,40.0,3],[72,38.0,3],[108,30.0,1],[223,30.0,2],[174,30.0,3],[59,27.0,2],[172,24.0,2],[168,24.0,2],[221,20.0,1],[230,19.8,2],[105,19.8,2],[170,18.0,2],[165,9.0,1],[173,9.0,2],[36,6.0,1],[166,6.0,1],[138,5.0,1],[22,3.3,1],[111,3.3,1]]},{"reg":"Хакасия республика","name":"Белоусова О.М. ИП","fo":"СФО","okb":350.0,"mname":null,"how":"точно","kg":76289.7,"akb":230,"sku":1.1,"nsku":6,"p":{"5":[7780.2,7,1.143],"0":[68508.0,227,1.075],"4":[1.5,1,1.0]},"tr":[[42,30,3940.2],[85,66,35614.3],[90,134,36735.2]],"skus":[[21,63119.1,221],[71,7372.2,4],[20,5388.9,23],[81,400.0,1],[68,8.0,3],[72,1.5,1]]},{"reg":"Башкортостан республика","name":"Белое морe ООО","fo":"ПФО","okb":1200.0,"mname":null,"how":"точно","kg":72229.9,"akb":139,"sku":1.5971,"nsku":8,"p":{"0":[26096.9,106,1.179],"2":[40990.0,41,1.439],"4":[2673.0,18,1.0],"7":[2110.0,9,1.0],"1":[360.0,11,1.0]},"tr":[[7,138,72058.3],[81,1,171.6]],"skus":[[107,25190.0,22],[21,17750.7,86],[134,15800.0,37],[20,8296.2,35],[105,2673.0,18],[69,2110.0,9],[109,360.0,11],[24,50.0,4]]},{"reg":"Бурятия республика","name":"Элит Трейд ТД ООО","fo":"ДФО","okb":860.0,"mname":null,"how":"точно","kg":69453.1,"akb":233,"sku":1.2489,"nsku":6,"p":{"5":[3699.0,57,1.0],"6":[5.0,3,1.0],"8":[3.0,1,1.0],"0":[65332.1,183,1.23],"3":[414.0,5,1.0]},"tr":[[11,226,68957.1],[23,7,496.0]],"skus":[[21,55892.1,171],[24,9440.0,54],[68,3699.0,57],[77,414.0,5],[65,5.0,3],[59,3.0,1]]},{"reg":"Костромская область","name":"Касьянова Н.В. ИП","fo":"ЦФО","okb":50.0,"mname":null,"how":"точно","kg":68261.2,"akb":185,"sku":2.4703,"nsku":38,"p":{"5":[2229.8,17,1.176],"6":[1794.0,31,3.194],"8":[18.0,4,1.0],"0":[7052.1,55,1.091],"10":[89.0,6,1.0],"2":[14015.0,27,1.074],"4":[3950.3,6,1.0],"3":[25091.0,100,1.28],"9":[45.0,1,1.0],"7":[7627.0,85,1.035],"1":[6350.0,14,1.143]},"tr":[[15,2,960.5],[19,1,267.0],[21,1,53.0],[27,3,1507.5],[40,170,41243.7],[41,1,1062.0],[58,1,0.0],[99,6,23167.5]],"skus":[[135,8495.0,24],[67,6986.0,60],[21,6883.8,53],[75,6447.0,80],[103,5520.0,5],[110,5451.0,4],[140,4880.0,2],[77,4237.0,23],[111,3930.3,2],[102,3700.0,12],[108,2997.0,35],[132,2440.0,2],[71,2131.8,9],[56,1160.0,7],[119,280.0,1],[172,258.0,10],[174,252.0,14],[166,246.0,16],[80,230.0,1],[168,225.0,16],[165,216.0,9],[170,201.0,12],[173,201.0,11],[20,168.3,7],[142,140.0,1],[171,132.0,7],[216,89.0,6],[81,70.0,3],[101,70.0,1],[64,60.0,3],[223,45.0,1],[68,28.0,8],[84,20.0,1],[72,20.0,4],[69,20.0,1],[59,18.0,4],[130,10.0,1],[65,3.0,1]]},{"reg":"Краснодарский край","name":"Новая Жизнь Юг ООО","fo":"ЮФО","okb":1700.0,"mname":null,"how":"точно","kg":65930.4,"akb":444,"sku":1.5541,"nsku":26,"p":{"5":[4490.7,129,1.24],"6":[894.0,28,1.714],"8":[112.5,20,1.15],"0":[27304.2,163,1.074],"10":[5.0,4,1.0],"2":[170.0,4,1.0],"4":[15812.0,23,1.0],"3":[17139.0,212,1.189],"7":[3.0,1,1.0]},"tr":[[0,7,10288.1],[20,2,48.0],[21,11,588.1],[41,357,49535.5],[48,2,171.0],[49,22,2206.7],[57,2,302.6],[69,41,2790.4]],"skus":[[22,14737.8,31],[21,12559.8,142],[111,10032.0,5],[140,8630.0,63],[110,7602.0,173],[82,5780.0,18],[57,3036.0,84],[67,897.0,15],[247,755.7,23],[68,600.0,44],[64,525.0,13],[65,291.0,24],[134,170.0,4],[59,109.5,20],[71,99.0,9],[173,24.0,2],[172,18.0,3],[171,15.0,2],[130,10.0,1],[174,9.0,2],[20,6.6,2],[166,6.0,1],[168,6.0,1],[216,5.0,4],[75,3.0,1],[235,3.0,3]]},{"reg":"Красноярский край","name":"Пищевые ингредиенты ООО","fo":"СФО","okb":700.0,"mname":null,"how":"точно","kg":64872.3,"akb":360,"sku":1.2111,"nsku":10,"p":{"5":[5176.5,70,1.029],"8":[110.5,14,1.0],"0":[43965.9,263,1.08],"4":[14320.4,27,1.0],"3":[1299.0,39,1.0]},"tr":[[11,1,3.3],[29,30,2742.3],[42,327,61723.4],[57,1,3.3],[90,1,400.0]],"skus":[[21,33927.3,223],[105,13193.4,16],[20,5494.5,24],[22,4544.1,37],[81,4450.0,7],[108,1299.0,39],[72,1127.0,11],[68,710.0,63],[59,110.5,14],[57,16.5,2]]},{"reg":"Тамбовская область","name":"Молочный мир ООО","fo":"ЦФО","okb":200.0,"mname":null,"how":"точно","kg":63505.3,"akb":49,"sku":1.2857,"nsku":12,"p":{"6":[1018.0,6,1.333],"8":[24.0,3,1.0],"2":[23810.0,13,1.0],"4":[2049.3,3,1.0],"3":[2668.0,9,1.0],"7":[1086.0,16,1.0],"1":[32850.0,11,1.0]},"tr":[[80,49,63505.3]],"skus":[[102,30180.0,9],[118,23810.0,13],[132,2670.0,2],[130,2170.0,1],[111,2049.3,3],[75,1086.0,16],[166,969.0,2],[110,498.0,8],[65,37.0,4],[59,24.0,3],[44,9.0,1],[172,3.0,1]]},{"reg":"Оренбургская область","name":"Азия Фуд ООО","fo":"ПФО","okb":187.0,"mname":null,"how":"точно","kg":60974.3,"akb":278,"sku":1.4604,"nsku":16,"p":{"5":[8712.2,106,1.16],"6":[165.0,3,6.333],"0":[33042.9,170,1.153],"4":[19054.2,58,1.172]},"tr":[[62,277,60954.5],[71,1,19.8]],"skus":[[21,18265.5,122],[111,16536.3,38],[20,14777.4,74],[61,6410.0,16],[105,2517.9,30],[57,2026.2,35],[68,276.0,72],[64,39.0,2],[174,33.0,3],[170,21.0,3],[173,21.0,1],[172,18.0,2],[166,15.0,3],[168,9.0,3],[171,6.0,1],[165,3.0,1]]},{"reg":"Московская область","name":"Альянс Юг (Галактика) ООО","fo":"ЦФО","okb":1000.0,"mname":"Альянс Юг (Галактика) ООО голополосова ","how":"по префиксу","kg":60526.0,"akb":82,"sku":1.5244,"nsku":2,"p":{"5":[59780.0,80,1.0],"6":[746.0,45,1.0]},"tr":[[5,1,1165.0],[14,2,1040.0],[29,1,620.0],[46,1,49.0],[55,74,56522.0],[56,1,580.0],[78,1,460.0],[84,1,90.0]],"skus":[[61,59780.0,80],[65,746.0,45]]},{"reg":"Красноярский край","name":"ФЛАГМАН ТД ООО","fo":"СФО","okb":652.0,"mname":null,"how":"точно","kg":59717.1,"akb":598,"sku":2.0117,"nsku":25,"p":{"5":[6491.8,274,1.026],"6":[8469.0,164,3.098],"8":[15.5,4,1.0],"0":[4220.4,127,1.094],"2":[13150.0,42,1.0],"4":[18357.4,72,1.0],"3":[8913.0,113,1.327],"1":[100.0,7,1.0]},"tr":[[11,1,3.0],[29,39,3990.6],[37,1,18.0],[42,540,52715.5],[55,1,324.0],[85,1,10.0],[90,14,2641.0],[97,1,15.0]],"skus":[[105,18341.4,69],[118,13150.0,42],[108,7599.0,91],[68,5878.0,259],[20,2834.7,63],[65,1818.0,45],[174,1485.0,77],[170,1431.0,90],[21,1379.4,72],[110,1314.0,59],[172,1029.0,68],[166,879.0,71],[168,879.0,62],[165,609.0,66],[173,339.0,29],[61,330.0,1],[71,155.1,13],[57,128.7,8],[102,50.0,2],[109,50.0,5],[59,15.5,4],[82,10.0,1],[58,6.0,2],[22,3.3,1],[23,3.0,3]]},{"reg":"Московская область","name":"Вела Фудс ООО","fo":"ЦФО","okb":50.0,"mname":null,"how":"точно","kg":57988.8,"akb":2,"sku":1.5,"nsku":2,"p":{"5":[52885.8,2,1.0],"6":[5103.0,1,1.0]},"tr":[[55,2,57988.8]],"skus":[[71,52885.8,2],[64,5103.0,1]]},{"reg":"Татарстан республика","name":"Восток-М ООО","fo":"ПФО","okb":1300.0,"mname":null,"how":"точно","kg":57893.3,"akb":295,"sku":1.2678,"nsku":8,"p":{"5":[4930.0,113,1.0],"0":[44866.5,218,1.124],"2":[5.0,1,1.0],"4":[8071.8,13,1.0],"1":[20.0,2,1.0]},"tr":[[38,1,450.0],[51,20,1738.8],[81,270,55537.5],[96,4,167.0]],"skus":[[20,28465.8,45],[21,14764.2,190],[111,8071.8,13],[68,4930.0,113],[22,1336.5,7],[27,300.0,3],[102,20.0,2],[134,5.0,1]]},{"reg":"Тюменская область","name":"ЕвроСиб-Трейд ООО","fo":"УрФО","okb":600.0,"mname":null,"how":"точно","kg":55478.1,"akb":265,"sku":1.5245,"nsku":12,"p":{"5":[11191.2,101,1.178],"6":[1391.0,13,1.0],"8":[38.5,6,1.0],"0":[27376.4,175,1.2],"2":[2990.0,39,1.0],"4":[12491.0,15,1.133]},"tr":[[2,1,30.0],[10,1,6.6],[28,1,33.0],[42,1,19.8],[43,1,56.1],[46,2,221.2],[55,2,201.9],[61,1,155.1],[67,1,46.2],[75,4,36.7],[79,1,6.6],[83,1,56.2],[86,214,49917.7],[91,28,4070.7],[98,6,620.3]],"skus":[[21,20456.7,157],[111,12408.0,14],[61,6470.0,21],[24,4580.0,27],[57,4039.2,56],[103,2990.0,39],[20,2339.7,26],[65,1391.0,13],[68,682.0,42],[82,50.0,1],[59,38.5,6],[105,33.0,2]]},{"reg":"Вологодская область","name":"Бабкин Д.И. ИП","fo":"СЗФО","okb":225.0,"mname":null,"how":"точно","kg":55105.3,"akb":112,"sku":1.5179,"nsku":6,"p":{"5":[1601.0,25,1.0],"0":[40323.3,73,1.37],"4":[12012.0,19,1.0],"3":[1169.0,26,1.0]},"tr":[[4,42,28439.4],[7,1,10.0],[15,62,25301.5],[39,2,328.1],[40,2,481.8],[46,1,19.8],[59,1,452.1],[99,1,72.6]],"skus":[[24,21840.0,27],[143,12012.0,19],[21,9636.0,38],[20,8847.3,35],[68,1601.0,25],[67,1169.0,26]]},{"reg":"Амурская область","name":"Чернявский С.П. ИП","fo":"ДФО","okb":200.0,"mname":null,"how":"точно","kg":54820.0,"akb":155,"sku":1.4323,"nsku":12,"p":{"5":[3902.6,62,1.065],"6":[70.0,3,1.0],"8":[42.5,7,1.0],"0":[33669.9,115,1.0],"2":[1740.0,8,1.75],"3":[15385.0,16,1.0],"1":[10.0,1,1.0]},"tr":[[3,146,54205.9],[23,1,29.7],[42,1,153.8],[46,1,5.0],[55,2,96.9],[73,3,323.4],[89,1,5.3]],"skus":[[21,33669.9,115],[110,15384.0,15],[57,2019.6,26],[68,1784.0,38],[134,1030.0,8],[107,660.0,4],[71,99.0,2],[65,70.0,3],[118,50.0,2],[59,42.5,7],[102,10.0,1],[77,1.0,1]]},{"reg":"Республика Крым","name":"Крымская Сырная Компания ООО","fo":"ЮФО","okb":1000.0,"mname":null,"how":"точно","kg":54714.34,"akb":887,"sku":1.1578,"nsku":8,"p":{"5":[19110.04,700,1.07],"6":[44.0,9,1.0],"0":[19007.5,146,1.082],"4":[16552.8,93,1.194]},"tr":[[26,1,15.0],[68,885,54695.34],[93,1,4.0]],"skus":[[21,17067.5,138],[111,12718.2,75],[68,11246.5,572],[57,5480.94,122],[105,3834.6,36],[247,2382.6,55],[24,1940.0,20],[65,44.0,9]]},{"reg":"Удмуртская республика","name":"Регион ООО","fo":"ПФО","okb":450.0,"mname":null,"how":"точно","kg":54047.9,"akb":332,"sku":1.2199,"nsku":7,"p":{"5":[6751.0,111,1.0],"0":[28265.3,175,1.063],"10":[5.0,5,1.0],"4":[15153.6,41,1.171],"3":[3873.0,55,1.0]},"tr":[[7,15,3212.8],[65,10,914.9],[81,6,312.9],[87,301,49607.3]],"skus":[[21,25545.3,167],[105,9969.3,32],[68,6751.0,111],[111,5184.3,16],[110,3873.0,55],[24,2720.0,19],[216,5.0,5]]},{"reg":"Астраханская область","name":"МИР КО ООО","fo":"ЮФО","okb":450.0,"mname":null,"how":"точно","kg":54006.5,"akb":145,"sku":1.6414,"nsku":9,"p":{"5":[3250.9,46,1.239],"8":[1980.5,40,1.075],"0":[45703.9,94,1.223],"4":[3071.2,22,1.045]},"tr":[[5,142,53973.5],[57,3,33.0]],"skus":[[21,44147.4,86],[105,2785.2,10],[68,1756.0,25],[59,1610.5,39],[57,1494.9,32],[22,913.0,16],[20,643.5,13],[60,370.0,4],[58,286.0,13]]},{"reg":"Самарская область","name":"АгроАльянс ООО","fo":"ПФО","okb":null,"mname":null,"how":"точно","kg":53764.2,"akb":398,"sku":1.2688,"nsku":13,"p":{"5":[22.0,8,1.0],"6":[915.0,34,1.588],"8":[1658.5,58,1.0],"0":[20064.0,229,1.127],"4":[6794.7,69,1.0],"1":[24310.0,52,1.115]},"tr":[[24,10,974.6],[45,8,337.4],[57,2,52.5],[62,41,4745.7],[71,333,47594.0],[72,4,60.0]],"skus":[[101,24020.0,43],[21,14107.5,159],[105,6794.7,69],[20,5956.5,99],[59,1658.5,58],[64,366.0,10],[165,222.0,23],[102,180.0,10],[170,168.0,7],[168,144.0,13],[132,110.0,5],[68,22.0,8],[174,15.0,1]]},{"reg":"Ярославская область","name":"Ярпродснабсервис ООО","fo":"ЦФО","okb":60.0,"mname":null,"how":"точно","kg":52378.8,"akb":111,"sku":1.2072,"nsku":17,"p":{"6":[75.0,1,7.0],"8":[3.0,1,1.0],"0":[13170.3,60,1.083],"4":[15229.5,15,1.0],"3":[441.0,3,1.333],"1":[23460.0,42,1.0]},"tr":[[13,3,316.9],[14,1,1000.0],[15,7,1993.7],[27,21,5011.0],[40,22,11134.8],[58,1,3477.8],[99,56,29444.6]],"skus":[[111,14991.9,12],[101,14630.0,39],[102,8830.0,3],[20,7840.8,24],[21,5329.5,41],[105,237.6,3],[110,210.0,1],[108,141.0,2],[80,90.0,1],[170,15.0,1],[168,15.0,1],[172,12.0,1],[166,12.0,1],[165,9.0,1],[171,6.0,1],[174,6.0,1],[59,3.0,1]]},{"reg":"Нижегородская область","name":"Суши и Море ТК ООО","fo":"ПФО","okb":700.0,"mname":null,"how":"точно","kg":51710.3,"akb":169,"sku":1.6272,"nsku":22,"p":{"5":[22303.9,106,1.255],"6":[740.0,8,2.125],"8":[48.5,3,1.0],"0":[23377.5,72,1.111],"10":[55.0,6,1.0],"2":[1520.0,3,1.0],"4":[2986.4,11,1.091],"3":[367.0,12,1.0],"7":[312.0,9,1.0]},"tr":[[13,15,2887.0],[27,2,310.2],[40,7,1180.2],[54,10,1762.1],[58,127,39730.2],[64,5,4033.5],[70,1,2.0],[96,2,1805.1]],"skus":[[21,17730.9,57],[61,12540.0,43],[20,5616.6,21],[57,4540.8,56],[111,2831.4,7],[68,2725.0,24],[71,2498.1,10],[103,1520.0,3],[77,367.0,12],[75,312.0,9],[65,293.0,8],[172,141.0,2],[168,135.0,2],[170,132.0,2],[50,126.0,2],[216,55.0,6],[59,48.5,3],[173,33.0,2],[27,30.0,1],[58,29.0,3],[171,6.0,1],[22,0.0,1]]},{"reg":"Свердловская область","name":"БизнесШанс ООО","fo":"УрФО","okb":129.0,"mname":null,"how":"точно","kg":50232.6,"akb":126,"sku":1.373,"nsku":6,"p":{"5":[15988.5,38,1.474],"0":[16998.3,72,1.167],"4":[17245.8,33,1.0]},"tr":[[61,1,6.6],[75,95,45701.7],[86,11,2531.1],[87,1,343.2],[91,15,1059.3],[94,3,590.7]],"skus":[[111,17245.8,33],[21,11451.0,57],[57,8322.6,24],[247,6943.2,17],[20,5547.3,27],[71,722.7,15]]},{"reg":"Иркутская область","name":"Искон ООО","fo":"СФО","okb":210.0,"mname":null,"how":"точно","kg":49999.0,"akb":12,"sku":1.1667,"nsku":4,"p":{"6":[4.0,1,1.0],"2":[32750.0,10,1.0],"4":[5.0,2,1.0],"3":[17240.0,1,1.0]},"tr":[[11,1,1500.0],[29,10,31259.0],[55,1,17240.0]],"skus":[[103,32750.0,10],[84,17240.0,1],[58,5.0,2],[65,4.0,1]]},{"reg":"Новгородская область","name":"Развитие ОРХ ООО","fo":"СЗФО","okb":40.0,"mname":null,"how":"точно","kg":49254.7,"akb":52,"sku":1.0385,"nsku":2,"p":{"5":[154.0,3,1.0],"0":[49100.7,51,1.0]},"tr":[[4,2,13.2],[15,2,521.4],[36,4,2108.7],[39,1,125.4],[41,2,1800.0],[42,3,2706.0],[46,24,13038.0],[55,2,99.0],[56,3,7857.3],[59,4,439.9],[67,4,20364.3],[71,1,181.5]],"skus":[[21,49100.7,51],[68,154.0,3]]},{"reg":"Ленинградская область","name":"АгроАльянс ООО","fo":"СЗФО","okb":3016.0,"mname":null,"how":"точно","kg":49238.3,"akb":195,"sku":1.1333,"nsku":6,"p":{"8":[20.0,10,1.0],"0":[27891.6,137,1.058],"2":[2520.0,1,1.0],"4":[18806.7,61,1.066]},"tr":[[4,7,957.0],[15,11,2485.4],[36,7,257.4],[46,123,38209.5],[56,6,603.9],[57,1,49.5],[59,12,1029.6],[67,28,5646.0]],"skus":[[21,16104.0,100],[20,11787.6,45],[105,10543.5,33],[111,8263.2,32],[107,2520.0,1],[59,20.0,10]]},{"reg":"Архангельская область","name":"СвитМилк ООО","fo":"СЗФО","okb":80.0,"mname":null,"how":"точно","kg":46946.7,"akb":92,"sku":2.0543,"nsku":30,"p":{"5":[458.7,7,1.0],"6":[765.0,4,5.5],"8":[169.5,7,1.286],"0":[2757.1,33,1.242],"10":[626.0,5,1.4],"2":[465.0,4,1.0],"4":[136.4,10,1.0],"3":[17886.0,37,1.081],"9":[61.0,2,1.5],"7":[12.0,3,1.0],"1":[23610.0,24,1.792]},"tr":[[4,84,46770.2],[57,8,176.5]],"skus":[[109,18970.0,22],[110,7626.0,35],[140,7340.0,1],[102,3290.0,20],[119,2270.0,3],[27,1480.0,4],[132,1350.0,1],[21,831.6,27],[130,650.0,1],[62,555.0,4],[71,458.7,7],[20,445.5,10],[103,380.0,1],[59,148.5,6],[168,141.0,2],[174,129.0,2],[173,123.0,3],[41,111.0,4],[166,105.0,4],[135,85.0,3],[172,81.0,2],[58,77.0,5],[216,71.0,3],[223,60.0,2],[111,59.4,5],[36,51.0,3],[171,24.0,2],[235,21.0,3],[75,12.0,3],[211,1.0,1]]},{"reg":"Челябинская область","name":"Мистер Крабс ООО","fo":"УрФО","okb":800.0,"mname":null,"how":"точно","kg":45881.9,"akb":196,"sku":1.2041,"nsku":5,"p":{"5":[1138.0,25,1.0],"0":[27095.5,145,1.138],"4":[17648.4,46,1.0]},"tr":[[7,16,1861.1],[43,13,1153.0],[75,6,468.3],[86,4,916.0],[87,1,85.8],[94,156,41397.7]],"skus":[[105,17648.4,46],[21,15932.4,116],[24,10480.0,32],[68,1138.0,25],[22,683.1,17]]},{"reg":"Кемеровская область","name":"Магуро ООО","fo":"СФО","okb":140.0,"mname":null,"how":"точно","kg":41775.1,"akb":59,"sku":1.7119,"nsku":8,"p":{"8":[3350.0,4,1.25],"0":[31340.0,52,1.712],"4":[7085.1,7,1.0]},"tr":[[29,1,72.6],[37,52,41191.0],[42,3,478.5],[46,1,3.3],[60,1,6.6],[87,1,23.1]],"skus":[[21,22370.7,47],[105,7085.1,7],[25,4610.0,24],[20,4207.5,13],[240,3264.0,3],[22,151.8,5],[60,50.0,1],[59,36.0,1]]},{"reg":"Ростовская область","name":"Альянс Юг (Галактика) ООО","fo":"ЮФО","okb":1065.0,"mname":null,"how":"точно","kg":40914.3,"akb":169,"sku":1.8698,"nsku":20,"p":{"5":[9135.1,101,1.188],"6":[4050.0,9,2.889],"8":[1484.5,25,1.0],"0":[16567.7,61,1.18],"4":[3986.0,32,1.031],"3":[5631.0,35,1.114],"7":[60.0,1,1.0]},"tr":[[5,7,723.9],[19,2,1268.2],[20,1,18.0],[21,2,1022.6],[29,1,102.3],[30,1,165.0],[32,4,3855.8],[41,9,507.6],[46,1,92.8],[55,2,4559.7],[57,1,23.1],[69,133,28501.7],[71,1,15.0],[74,1,3.3],[79,3,55.3]],"skus":[[20,11002.2,23],[67,5556.0,33],[57,3818.1,51],[105,3663.0,14],[21,3415.5,42],[68,2907.0,60],[61,2410.0,9],[24,2150.0,7],[59,1484.5,25],[64,1371.0,9],[174,921.0,3],[168,786.0,3],[170,426.0,3],[173,345.0,3],[58,323.0,19],[165,105.0,2],[166,90.0,2],[77,75.0,6],[78,60.0,1],[65,6.0,1]]},{"reg":"Краснодарский край","name":"Альянс Юг (Галактика) ООО","fo":"ЮФО","okb":450.0,"mname":null,"how":"точно","kg":40484.6,"akb":95,"sku":1.5053,"nsku":11,"p":{"5":[8372.2,55,1.073],"6":[183.0,8,1.125],"0":[6445.4,29,1.517],"2":[40.0,2,1.0],"4":[4.0,2,1.0],"1":[25440.0,27,1.0]},"tr":[[0,7,3407.5],[30,1,19.8],[32,1,10.0],[40,1,218.0],[41,66,14006.2],[46,1,54.3],[55,4,1179.9],[63,1,20.0],[69,3,134.1],[75,2,88.9],[76,1,201.3],[79,1,52.8],[87,1,20990.0],[90,1,30.0],[91,1,3.0],[95,3,68.8]],"skus":[[102,25440.0,27],[57,6679.2,14],[21,4191.0,23],[20,2204.4,15],[68,1123.0,44],[61,570.0,1],[65,162.0,8],[24,50.0,6],[118,40.0,2],[64,21.0,1],[58,4.0,2]]},{"reg":"Псковская область","name":"Никоноров О.Е. ИП","fo":"СЗФО","okb":150.0,"mname":null,"how":"точно","kg":39709.2,"akb":73,"sku":1.7945,"nsku":10,"p":{"6":[4314.0,46,2.196],"0":[1465.2,27,1.0],"1":[33930.0,3,1.0]},"tr":[[46,3,104.1],[59,1,35864.0],[67,69,3741.1]],"skus":[[102,33930.0,3],[166,1512.0,28],[21,1465.2,27],[170,627.0,24],[172,588.0,20],[168,573.0,9],[174,342.0,3],[165,261.0,1],[173,249.0,4],[171,162.0,12]]},{"reg":"Ленинградская область","name":"Бекон Групп ООО","fo":"СЗФО","okb":380.0,"mname":null,"how":"точно","kg":39069.75,"akb":116,"sku":2.8276,"nsku":25,"p":{"5":[81.0,4,1.0],"6":[1420.22,28,3.286],"0":[2659.8,21,1.048],"10":[7.0,5,1.0],"2":[7872.0,32,1.281],"4":[77.24,13,1.0],"3":[8970.0,65,1.169],"7":[6682.49,57,1.088],"1":[11300.0,13,1.0]},"tr":[[46,116,39069.75]],"skus":[[101,11300.0,13],[135,7760.0,32],[67,6810.0,60],[75,4222.49,55],[69,2460.0,7],[110,2100.0,12],[20,1527.9,5],[21,1131.9,17],[168,456.0,15],[172,240.52,22],[174,220.0,16],[166,210.0,16],[64,114.0,2],[170,110.7,14],[68,81.0,4],[58,75.24,12],[84,60.0,4],[103,60.0,3],[171,51.0,4],[107,40.0,4],[173,18.0,3],[118,10.0,1],[216,7.0,5],[72,2.0,1],[117,2.0,1]]},{"reg":"Белгородская область","name":"Топорков В.Г. ИП","fo":"ЦФО","okb":1400.0,"mname":null,"how":"точно","kg":35570.9,"akb":296,"sku":1.3649,"nsku":13,"p":{"5":[3943.5,41,1.39],"6":[114.0,6,1.0],"0":[3250.5,63,1.063],"2":[7660.0,42,1.048],"4":[9.9,1,1.0],"3":[15213.0,164,1.0],"1":[5380.0,65,1.0]},"tr":[[8,290,35073.7],[16,5,130.2],[44,1,367.0]],"skus":[[110,15123.0,163],[118,6800.0,41],[101,4920.0,64],[57,3319.8,35],[21,3022.8,61],[103,860.0,1],[247,623.7,22],[109,460.0,1],[20,227.7,6],[65,114.0,6],[130,90.0,1],[105,9.9,1],[134,0.0,2]]},{"reg":"Московская область","name":"Вкус Арт ООО","fo":"ЦФО","okb":500.0,"mname":null,"how":"точно","kg":35131.5,"akb":96,"sku":1.8438,"nsku":11,"p":{"5":[2907.9,30,1.1],"6":[4033.0,23,1.0],"0":[1557.6,27,1.0],"12":[31.0,1,1.0],"2":[95.0,2,1.0],"3":[6377.0,34,1.088],"7":[20130.0,40,1.35]},"tr":[[33,1,5.0],[55,95,35126.5]],"skus":[[69,19050.0,31],[67,6264.0,30],[65,4033.0,23],[71,2847.9,29],[21,1557.6,27],[75,1080.0,23],[134,95.0,2],[80,90.0,1],[81,60.0,4],[2,31.0,1],[77,23.0,6]]},{"reg":"Омская область","name":"Новичков С.Ю. ИП","fo":"СФО","okb":1065.0,"mname":null,"how":"точно","kg":33892.2,"akb":251,"sku":1.251,"nsku":20,"p":{"5":[8297.2,109,1.046],"6":[48.0,6,1.0],"8":[21.0,9,1.0],"0":[15704.7,111,1.171],"10":[8.0,2,1.5],"2":[480.0,5,1.0],"4":[7353.3,24,1.042],"3":[1965.0,20,1.05],"9":[15.0,1,1.0]},"tr":[[60,8,540.9],[61,242,33301.8],[86,1,49.5]],"skus":[[21,8992.5,80],[105,7048.8,21],[24,5610.0,28],[68,5004.0,73],[71,3036.0,33],[110,1275.0,15],[22,1079.1,20],[80,690.0,6],[117,480.0,5],[82,300.0,1],[61,240.0,1],[65,48.0,6],[20,23.1,2],[59,21.0,9],[223,15.0,1],[57,13.2,3],[62,5.0,2],[72,4.5,3],[70,4.0,4],[216,3.0,1]]},{"reg":"Ивановская область","name":"ВостокПродукт ТД","fo":"ЦФО","okb":2100.0,"mname":null,"how":"точно","kg":33364.9,"akb":205,"sku":1.3659,"nsku":10,"p":{"5":[6744.7,35,1.029],"6":[3309.0,21,1.143],"0":[15427.5,103,1.087],"4":[601.7,29,1.034],"3":[7282.0,75,1.04]},"tr":[[15,5,343.3],[27,200,33021.6]],"skus":[[21,8936.4,64],[77,7072.0,75],[68,6649.0,33],[20,6491.1,48],[65,3183.0,21],[58,539.0,24],[67,210.0,3],[64,126.0,3],[57,95.7,3],[105,62.7,6]]},{"reg":"Московская область","name":"РЫБНЫЙ ПОРТ ООО","fo":"ЦФО","okb":300.0,"mname":"РЫБНЫЙ ПОРТ ООО Фудсити","how":"по префиксу","kg":32353.2,"akb":103,"sku":1.2233,"nsku":2,"p":{"0":[32353.2,103,1.223]},"tr":[[4,1,33.0],[32,1,36.3],[33,3,72.6],[55,95,31993.5],[78,1,6.6],[82,1,135.3],[84,1,75.9]],"skus":[[20,23944.8,78],[21,8408.4,48]]},{"reg":"Хабаровский край","name":"РЫБ МО ООО","fo":"ДФО","okb":98.0,"mname":null,"how":"точно","kg":31016.0,"akb":118,"sku":1.9068,"nsku":9,"p":{"5":[3052.1,45,1.333],"6":[3.0,2,1.0],"0":[13246.2,82,1.354],"4":[14714.7,38,1.368]},"tr":[[3,6,669.9],[22,1,3.3],[66,2,1098.9],[89,109,29243.9]],"skus":[[111,13025.1,30],[21,8368.8,61],[20,2930.4,24],[22,1947.0,26],[57,1933.8,33],[105,1689.6,22],[68,950.0,20],[247,168.3,7],[65,3.0,2]]},{"reg":"Ленинградская область","name":"Йонас Спб ООО","fo":"СЗФО","okb":500.0,"mname":null,"how":"точно","kg":30811.7,"akb":141,"sku":1.5035,"nsku":11,"p":{"6":[5385.0,72,1.681],"0":[5761.8,73,1.041],"4":[19644.9,12,1.083],"1":[20.0,2,1.0]},"tr":[[36,1,15.0],[46,136,30778.8],[59,3,14.6],[84,1,3.3]],"skus":[[111,18658.2,9],[21,4973.1,67],[65,3111.0,52],[105,986.7,4],[168,885.0,19],[170,810.0,19],[20,788.7,9],[172,396.0,16],[165,129.0,9],[171,54.0,6],[101,20.0,2]]},{"reg":"Ростовская область","name":"Южная сырная компания ООО","fo":"ЮФО","okb":1500.0,"mname":null,"how":"точно","kg":30650.1,"akb":265,"sku":1.4113,"nsku":21,"p":{"5":[6878.7,133,1.038],"6":[939.0,22,2.955],"8":[2860.5,60,1.0],"0":[19677.9,86,1.081],"3":[106.0,5,1.4],"7":[188.0,9,1.222]},"tr":[[20,9,427.8],[21,1,50.0],[25,2,68.9],[41,8,1514.7],[49,1,122.2],[55,1,391.0],[57,1,80.5],[60,1,79.2],[69,240,27783.8],[79,1,132.0]],"skus":[[20,10678.8,20],[21,8999.1,73],[68,5331.0,120],[59,2860.5,60],[57,1547.7,18],[64,216.0,5],[170,192.0,14],[168,177.0,10],[69,140.0,6],[166,129.0,9],[36,84.0,9],[172,84.0,9],[174,42.0,5],[77,36.0,3],[140,30.0,1],[83,30.0,3],[130,30.0,1],[75,18.0,2],[173,12.0,3],[84,10.0,2],[171,3.0,1]]},{"reg":"Астраханская область","name":"ПиР ООО","fo":"ЮФО","okb":430.0,"mname":null,"how":"точно","kg":30382.57,"akb":79,"sku":1.519,"nsku":8,"p":{"5":[1465.2,9,1.111],"0":[25405.0,74,1.189],"4":[3512.37,14,1.571]},"tr":[[5,79,30382.57]],"skus":[[21,22638.0,72],[143,3237.3,11],[25,1810.0,4],[20,957.0,12],[71,795.3,1],[57,669.9,9],[111,260.7,8],[106,14.37,3]]},{"reg":"Московская область","name":"Меридиан ООО","fo":"ЦФО","okb":3000.0,"mname":null,"how":"точно","kg":29801.9,"akb":123,"sku":1.3333,"nsku":11,"p":{"6":[17771.0,56,1.357],"8":[36.0,4,1.0],"2":[5420.0,5,1.4],"4":[1506.9,4,1.0],"3":[4888.0,67,1.015],"7":[180.0,5,1.0]},"tr":[[4,1,150.0],[10,1,12.0],[55,114,28151.4],[58,2,95.5],[82,3,1371.0],[84,2,22.0]],"skus":[[64,10413.0,24],[65,7358.0,52],[117,5270.0,5],[77,4838.0,66],[105,1461.9,1],[107,150.0,2],[78,150.0,1],[80,50.0,2],[58,45.0,3],[59,36.0,4],[75,30.0,4]]},{"reg":"Курганская область","name":"Кряжев А.В. ИП","fo":"УрФО","okb":23.0,"mname":null,"how":"точно","kg":28852.55,"akb":37,"sku":2.1892,"nsku":19,"p":{"5":[814.9,6,1.167],"6":[126.0,1,7.0],"0":[3517.8,16,1.188],"10":[55.0,3,1.0],"2":[7803.75,15,1.0],"4":[4549.1,9,1.333],"3":[11986.0,17,1.059]},"tr":[[43,24,16140.45],[86,13,12712.1]],"skus":[[110,9936.0,14],[118,7803.75,15],[21,2752.2,13],[111,2283.6,9],[105,2260.5,2],[80,1650.0,1],[20,765.6,6],[71,471.9,2],[119,400.0,3],[68,343.0,5],[62,55.0,3],[166,42.0,1],[170,27.0,1],[174,21.0,1],[172,15.0,1],[171,12.0,1],[168,6.0,1],[58,5.0,1],[165,3.0,1]]},{"reg":"Воронежская область","name":"Основы Вкуса (Козловский ИП)","fo":"ЦФО","okb":400.0,"mname":null,"how":"точно","kg":28808.28,"akb":418,"sku":1.3182,"nsku":29,"p":{"5":[3268.0,131,1.053],"6":[465.0,8,3.25],"8":[25.0,15,1.0],"0":[10599.6,199,1.015],"10":[38.0,12,1.0],"2":[360.0,1,2.0],"4":[5273.8,54,1.0],"11":[2.88,6,1.0],"3":[45.0,4,1.0],"9":[25.0,1,1.0],"7":[216.0,28,1.0],"1":[8490.0,57,1.105]},"tr":[[8,4,246.7],[10,5,1508.6],[14,1,23.1],[16,255,13170.36],[33,6,640.3],[44,4,686.4],[47,85,6582.4],[55,1,3.0],[57,1,6.0],[63,33,4220.42],[70,1,3.3],[80,7,848.5],[84,15,869.2]],"skus":[[21,9919.8,187],[132,6360.0,40],[111,5266.8,51],[102,2130.0,23],[57,2121.9,42],[20,660.0,12],[71,617.1,29],[68,529.0,67],[117,320.0,1],[75,216.0,28],[172,105.0,8],[168,72.0,3],[165,66.0,3],[174,63.0,2],[170,60.0,2],[173,51.0,2],[107,40.0,1],[62,33.0,11],[59,25.0,15],[238,25.0,1],[67,24.0,1],[171,24.0,1],[166,24.0,5],[110,21.0,3],[22,19.8,3],[216,5.0,1],[58,5.0,2],[233,2.88,6],[73,2.0,1]]},{"reg":"Ульяновская область","name":"Белкина С.В. ИП","fo":"ПФО","okb":920.0,"mname":"Белкина С.В. ИП В2В ","how":"по префиксу","kg":28559.7,"akb":142,"sku":1.3521,"nsku":25,"p":{"5":[175.6,45,1.178],"6":[90.0,2,1.0],"8":[6.0,3,1.0],"0":[21230.2,98,1.082],"10":[1.0,1,1.0],"4":[6707.9,16,1.125],"3":[32.0,3,1.333],"9":[150.0,1,1.0],"1":[167.0,2,2.0]},"tr":[[54,1,198.0],[71,1,9.9],[88,140,28351.8]],"skus":[[21,15005.1,95],[105,6147.9,13],[237,4796.0,2],[20,1405.8,6],[82,540.0,1],[101,150.0,2],[223,150.0,1],[68,102.0,40],[64,84.0,1],[57,42.9,6],[71,29.7,6],[25,20.0,2],[140,20.0,1],[102,10.0,1],[219,10.0,1],[67,9.0,2],[111,8.0,2],[132,7.0,1],[59,6.0,3],[65,6.0,1],[22,3.3,1],[108,3.0,1],[72,2.0,1],[70,1.0,1],[216,1.0,1]]},{"reg":"Курская область","name":"Хорекафуд ООО","fo":"ЦФО","okb":200.0,"mname":null,"how":"точно","kg":26854.6,"akb":9,"sku":2.3333,"nsku":14,"p":{"6":[87.0,2,2.0],"8":[62.5,2,1.0],"0":[7953.1,6,1.167],"2":[20.0,1,1.0],"4":[165.0,1,1.0],"3":[15960.0,2,2.5],"7":[2607.0,1,1.0]},"tr":[[8,2,198.0],[16,1,741.0],[44,5,964.9],[47,1,24950.7]],"skus":[[140,14940.0,2],[21,7207.2,4],[75,2607.0,1],[67,789.0,1],[20,405.9,2],[24,340.0,1],[110,231.0,2],[111,165.0,1],[59,62.5,2],[64,24.0,1],[170,24.0,1],[168,24.0,1],[103,20.0,1],[165,15.0,1]]},{"reg":"Пермский край","name":"Юркина А.Г. ИП","fo":"ПФО","okb":2600.0,"mname":null,"how":"точно","kg":25781.2,"akb":372,"sku":1.2392,"nsku":8,"p":{"5":[9636.2,245,1.033],"0":[16145.0,171,1.216]},"tr":[[65,370,25774.6],[70,1,3.3],[87,1,3.3]],"skus":[[21,9715.2,147],[68,7582.0,231],[24,5180.0,30],[57,1560.9,16],[20,1240.8,26],[61,490.0,5],[23,9.0,5],[71,3.3,1]]},{"reg":"Краснодарский край","name":"Свит Лайф Фудсервис ООО (Краснодар)","fo":"ЮФО","okb":1350.0,"mname":null,"how":"точно","kg":25072.2,"akb":526,"sku":1.0779,"nsku":6,"p":{"6":[4025.0,205,1.02],"8":[6.0,3,1.0],"0":[16272.3,295,1.0],"4":[4728.9,57,1.0],"1":[40.0,3,1.0]},"tr":[[0,48,3256.0],[41,388,19342.6],[57,1,13.2],[58,1,29.7],[69,66,1652.0],[79,22,778.7]],"skus":[[21,16272.3,295],[105,4728.9,57],[65,3905.0,198],[168,120.0,11],[101,40.0,3],[59,6.0,3]]},{"reg":"Омская область","name":"КондитерХлеб ООО","fo":"СФО","okb":315.0,"mname":"КондитерХлеб ООО B2B","how":"по префиксу","kg":24637.8,"akb":59,"sku":1.2881,"nsku":7,"p":{"5":[4092.0,11,1.0],"0":[2376.0,30,1.067],"4":[778.8,18,1.0],"3":[17334.0,12,1.0],"7":[57.0,3,1.0]},"tr":[[55,1,92.4],[60,1,13.2],[61,57,24532.2]],"skus":[[80,17130.0,8],[71,4092.0,11],[21,2369.4,30],[111,778.8,18],[110,204.0,4],[75,57.0,3],[22,6.6,2]]},{"reg":"Московская область","name":"Березка Фуд ООО","fo":"ЦФО","okb":968.0,"mname":null,"how":"точно","kg":23862.3,"akb":59,"sku":1.0508,"nsku":2,"p":{"0":[23862.3,59,1.051]},"tr":[[33,3,567.6],[55,54,22423.5],[84,2,871.2]],"skus":[[20,22836.0,51],[21,1026.3,11]]},{"reg":"Рязанская область","name":"ФрутЭкспресс ООО","fo":"ЦФО","okb":500.0,"mname":null,"how":"точно","kg":23851.2,"akb":61,"sku":1.0656,"nsku":4,"p":{"5":[4269.0,10,1.0],"8":[82.5,10,1.0],"0":[19499.7,43,1.047]},"tr":[[16,2,3088.8],[27,1,1.0],[55,1,363.0],[70,57,20398.4]],"skus":[[20,17691.3,19],[68,4269.0,10],[21,1808.4,26],[59,82.5,10]]},{"reg":"Приморский край","name":"Сакура ООО","fo":"ДФО","okb":500.0,"mname":null,"how":"точно","kg":23594.6,"akb":68,"sku":1.2059,"nsku":5,"p":{"5":[3146.0,12,1.0],"0":[17691.3,47,1.128],"10":[81.0,6,1.0],"4":[2676.3,11,1.0]},"tr":[[57,1,13.2],[66,67,23581.4]],"skus":[[21,15998.4,45],[68,3146.0,12],[105,2676.3,11],[22,1692.9,8],[62,81.0,6]]},{"reg":"Коми республика","name":"Чарков П.В. ИП","fo":"СЗФО","okb":56.0,"mname":null,"how":"точно","kg":23500.9,"akb":28,"sku":1.3214,"nsku":3,"p":{"0":[174.9,3,1.0],"2":[19600.0,21,1.0],"3":[3726.0,13,1.0]},"tr":[[39,28,23500.9]],"skus":[[103,19600.0,21],[110,3726.0,13],[21,174.9,3]]},{"reg":"Тверская область","name":"ЛОГИСТИК ФУД ООО","fo":"ЦФО","okb":1000.0,"mname":null,"how":"точно","kg":22475.0,"akb":146,"sku":1.1849,"nsku":3,"p":{"0":[21049.4,125,1.168],"4":[1425.6,27,1.0]},"tr":[[13,10,2368.6],[33,8,255.1],[40,3,114.2],[55,60,6854.2],[59,2,785.2],[78,5,389.4],[82,52,11289.1],[99,6,419.2]],"skus":[[24,12450.0,31],[21,8599.4,115],[111,1425.6,27]]},{"reg":"Татарстан республика","name":"АгроПродГрупп ООО","fo":"ПФО","okb":1100.0,"mname":null,"how":"точно","kg":22194.0,"akb":62,"sku":1.9355,"nsku":19,"p":{"5":[564.0,6,1.0],"6":[3020.0,27,2.519],"0":[12230.9,33,1.091],"2":[30.0,1,1.0],"4":[6194.1,5,1.0],"9":[25.0,2,1.0],"1":[130.0,2,1.0]},"tr":[[81,62,22194.0]],"skus":[[21,10989.0,29],[105,5326.2,4],[64,1152.0,16],[24,1100.0,3],[111,867.9,1],[68,564.0,6],[37,390.0,7],[39,381.0,7],[43,285.0,7],[33,228.0,7],[44,216.0,7],[41,213.0,9],[20,141.9,4],[101,130.0,2],[42,78.0,3],[65,77.0,5],[107,30.0,1],[223,15.0,1],[8,10.0,1]]},{"reg":"Ростовская область","name":"Тора ООО","fo":"ЮФО","okb":2780.0,"mname":null,"how":"точно","kg":22125.0,"akb":238,"sku":1.1345,"nsku":7,"p":{"5":[8617.5,104,1.058],"0":[13507.5,147,1.088]},"tr":[[0,2,312.0],[5,4,2845.7],[7,2,82.5],[8,10,1492.2],[14,5,359.3],[16,4,76.0],[19,1,26.4],[20,1,66.0],[21,9,262.6],[26,1,69.3],[28,1,617.1],[30,1,1.0],[32,1,6.6],[41,21,2614.8],[49,2,194.7],[55,1,1.0],[57,3,31.8],[65,1,10.0],[68,26,522.4],[69,129,11807.1],[71,2,211.6],[76,1,102.3],[79,5,277.2],[81,4,49.6],[87,2,82.5],[92,1,3.3]],"skus":[[21,9916.5,115],[70,4682.0,82],[20,3455.1,33],[57,3085.5,20],[61,850.0,8],[22,75.9,9],[24,60.0,3]]},{"reg":"Новгородская область","name":"Никоноров О.Е. ИП","fo":"СЗФО","okb":57.0,"mname":null,"how":"точно","kg":21593.0,"akb":96,"sku":1.0625,"nsku":2,"p":{"2":[20345.0,88,1.0],"3":[1248.0,14,1.0]},"tr":[[59,96,21593.0]],"skus":[[135,20345.0,88],[110,1248.0,14]]},{"reg":"Башкортостан республика","name":"АгроАльянс ООО","fo":"ПФО","okb":2400.0,"mname":null,"how":"точно","kg":21588.8,"akb":242,"sku":1.1033,"nsku":4,"p":{"0":[19608.6,224,1.08],"4":[1300.2,23,1.0],"1":[680.0,2,1.0]},"tr":[[7,238,21126.8],[94,4,462.0]],"skus":[[21,17879.4,186],[20,1729.2,56],[105,1300.2,23],[132,680.0,2]]},{"reg":"Забайкальский край","name":"Элит Трейд ТД ООО","fo":"ДФО","okb":350.0,"mname":null,"how":"точно","kg":21461.2,"akb":144,"sku":1.1597,"nsku":5,"p":{"5":[779.0,39,1.0],"6":[37.0,4,1.0],"0":[19787.2,109,1.101],"4":[858.0,4,1.0]},"tr":[[11,2,111.0],[23,142,21350.2]],"skus":[[21,11497.2,88],[24,8290.0,32],[111,858.0,4],[68,779.0,39],[65,37.0,4]]},{"reg":"Ставропольский край","name":"КОСМОС ООО","fo":"СКФО","okb":1200.0,"mname":null,"how":"точно","kg":21004.5,"akb":58,"sku":1.1034,"nsku":2,"p":{"0":[4194.3,30,1.0],"4":[16810.2,34,1.0]},"tr":[[5,5,2570.7],[32,1,165.0],[35,2,39.6],[41,6,5725.5],[76,2,303.6],[79,42,12200.1]],"skus":[[105,16810.2,34],[22,4194.3,30]]},{"reg":"Мурманская область","name":"Чистякова И.Ю. ИП","fo":"СЗФО","okb":120.0,"mname":null,"how":"точно","kg":20914.8,"akb":58,"sku":2.2069,"nsku":12,"p":{"0":[7871.9,30,1.267],"2":[3910.0,19,1.526],"4":[372.9,3,1.0],"3":[1449.0,26,1.385],"7":[5171.0,13,1.385],"1":[2140.0,4,1.0]},"tr":[[36,1,72.0],[56,57,20842.8]],"skus":[[69,4970.0,13],[134,3530.0,18],[20,3399.0,7],[21,3012.9,26],[109,2140.0,4],[24,1460.0,5],[110,1359.0,26],[135,380.0,11],[111,372.9,3],[75,201.0,5],[67,51.0,2],[108,39.0,8]]},{"reg":"Удмуртская республика","name":"Юркина А.Г. ИП","fo":"ПФО","okb":1050.0,"mname":null,"how":"точно","kg":20369.7,"akb":154,"sku":1.1364,"nsku":5,"p":{"5":[513.3,46,1.0],"0":[19856.4,122,1.057]},"tr":[[65,11,695.0],[81,1,6.6],[87,142,19668.1]],"skus":[[21,18546.0,103],[24,1020.0,12],[68,510.0,45],[20,290.4,14],[57,3.3,1]]},{"reg":"Вологодская область","name":"Тютюнник И.В. ИП","fo":"СЗФО","okb":250.0,"mname":null,"how":"точно","kg":20240.7,"akb":92,"sku":1.6522,"nsku":12,"p":{"5":[3649.1,46,1.087],"6":[375.0,6,2.833],"0":[6186.3,45,1.244],"2":[20.0,2,1.0],"4":[1455.3,9,1.0],"3":[8555.0,18,1.0]},"tr":[[4,5,545.7],[15,87,19695.0]],"skus":[[130,8510.0,13],[20,2745.6,26],[21,2570.7,26],[57,2267.1,24],[111,1455.3,9],[68,1382.0,26],[24,870.0,4],[168,141.0,5],[170,138.0,6],[173,96.0,6],[108,45.0,5],[135,20.0,2]]},{"reg":"Камчатский край","name":"Восточная лавка ООО","fo":"ДФО","okb":178.0,"mname":null,"how":"точно","kg":19654.3,"akb":82,"sku":1.5366,"nsku":6,"p":{"5":[3385.3,36,1.25],"0":[12483.9,71,1.07],"4":[3785.1,5,1.0]},"tr":[[34,75,19429.9],[57,7,224.4]],"skus":[[20,12196.8,66],[105,3785.1,5],[71,2079.0,20],[57,1290.3,23],[21,287.1,10],[68,16.0,2]]},{"reg":"Ростовская область","name":"КОСМОС ООО","fo":"ЮФО","okb":500.0,"mname":null,"how":"точно","kg":18499.2,"akb":33,"sku":1.303,"nsku":4,"p":{"0":[7341.9,19,1.421],"4":[11157.3,16,1.0]},"tr":[[8,6,3872.1],[41,3,405.9],[44,5,3511.6],[69,19,10709.6]],"skus":[[105,11157.3,16],[20,5827.8,11],[21,1244.1,9],[24,270.0,7]]},{"reg":"Владимирская область","name":"Сфера ООО","fo":"ЦФО","okb":100.0,"mname":null,"how":"точно","kg":18291.7,"akb":124,"sku":1.3387,"nsku":7,"p":{"5":[640.0,28,1.0],"0":[234.7,3,1.0],"2":[6580.0,73,1.0],"3":[2064.0,22,1.0],"7":[3.0,1,1.0],"1":[8770.0,39,1.0]},"tr":[[13,120,18028.7],[58,4,263.0]],"skus":[[132,8770.0,39],[134,6580.0,73],[108,2064.0,22],[68,640.0,28],[21,194.7,1],[24,40.0,2],[75,3.0,1]]},{"reg":"Волгоградская область","name":"Успех ООО","fo":"ЮФО","okb":500.0,"mname":null,"how":"точно","kg":17929.9,"akb":80,"sku":1.375,"nsku":13,"p":{"5":[578.7,38,1.026],"6":[4.0,4,1.0],"0":[10659.0,25,1.48],"4":[4879.2,20,1.05],"3":[1803.0,7,1.0],"7":[6.0,2,1.0]},"tr":[[5,4,621.1],[14,70,10115.1],[32,6,7193.7]],"skus":[[21,6065.4,22],[111,4765.2,12],[20,4263.6,11],[67,1803.0,7],[24,330.0,4],[61,280.0,6],[68,269.0,29],[105,66.0,1],[57,29.7,4],[58,28.0,6],[82,20.0,2],[75,6.0,2],[65,4.0,4]]},{"reg":"Ленинградская область","name":"Алиди Проф ООО Санкт-Петербург","fo":"СЗФО","okb":2000.0,"mname":null,"how":"точно","kg":17191.2,"akb":138,"sku":1.0652,"nsku":9,"p":{"5":[816.3,25,1.0],"8":[428.0,7,1.0],"0":[8332.5,80,1.0],"2":[100.0,1,1.0],"4":[7457.4,29,1.0],"7":[57.0,5,1.0]},"tr":[[15,1,722.7],[36,6,410.6],[46,75,10797.9],[56,5,281.2],[59,17,2390.1],[67,14,1423.8],[81,20,1164.9]],"skus":[[21,8332.5,80],[105,7418.4,28],[68,813.0,24],[60,420.0,1],[107,100.0,1],[75,57.0,5],[58,39.0,1],[59,8.0,6],[71,3.3,1]]},{"reg":"Удмуртская республика","name":"Хлебснаб ООО","fo":"ПФО","okb":null,"mname":null,"how":"точно","kg":15164.8,"akb":57,"sku":1.4211,"nsku":3,"p":{"5":[88.0,16,1.0],"0":[15076.8,51,1.275]},"tr":[[87,57,15164.8]],"skus":[[21,9226.8,50],[24,5850.0,15],[68,88.0,16]]},{"reg":"Свердловская область","name":"АгроАльянс ООО","fo":"УрФО","okb":450.0,"mname":null,"how":"точно","kg":14979.0,"akb":176,"sku":1.1023,"nsku":3,"p":{"8":[13.5,5,1.0],"0":[14965.5,172,1.099]},"tr":[[43,21,1676.4],[75,64,8510.1],[86,5,145.2],[91,2,29.7],[94,83,4614.3],[98,1,3.3]],"skus":[[21,7626.3,129],[20,7339.2,60],[59,13.5,5]]},{"reg":"Новосибирская область","name":"Новичков С.Ю. ИП","fo":"СФО","okb":1052.0,"mname":null,"how":"точно","kg":13898.2,"akb":40,"sku":1.175,"nsku":9,"p":{"6":[201.0,4,1.0],"0":[5715.6,24,1.083],"10":[6.0,2,1.0],"4":[7794.6,13,1.0],"3":[181.0,2,1.0]},"tr":[[2,5,158.4],[37,6,10962.6],[57,1,3.3],[60,22,1772.0],[83,6,1001.9]],"skus":[[105,7794.6,13],[20,4019.4,8],[21,1692.9,17],[65,201.0,4],[80,130.0,1],[110,51.0,1],[62,4.0,1],[22,3.3,1],[216,2.0,1]]},{"reg":"Краснодарский край","name":"Успех ООО","fo":"ЮФО","okb":500.0,"mname":null,"how":"точно","kg":13508.7,"akb":255,"sku":1.1529,"nsku":8,"p":{"5":[1301.8,89,1.045],"6":[6.0,5,1.0],"0":[11559.9,180,1.0],"4":[635.0,14,1.071],"3":[6.0,1,1.0]},"tr":[[0,18,1253.7],[16,1,3.3],[41,226,10867.6],[69,8,1017.8],[79,2,366.3]],"skus":[[21,11559.9,180],[68,1084.0,82],[111,495.0,6],[57,217.8,11],[82,130.0,5],[72,10.0,4],[67,6.0,1],[65,6.0,5]]},{"reg":"Хабаровский край","name":"Форт Трейд ДВ ООО","fo":"ДФО","okb":220.0,"mname":null,"how":"точно","kg":12873.3,"akb":48,"sku":1.4167,"nsku":5,"p":{"5":[877.8,13,1.154],"0":[8599.8,33,1.091],"4":[3395.7,17,1.0]},"tr":[[22,3,42.9],[89,45,12830.4]],"skus":[[20,6438.3,9],[111,3395.7,17],[21,2161.5,27],[71,755.7,13],[57,122.1,2]]},{"reg":"Челябинская область","name":"ГК АЛЕКСИКО ООО","fo":"УрФО","okb":700.0,"mname":null,"how":"точно","kg":12797.4,"akb":66,"sku":1.0,"nsku":1,"p":{"0":[12797.4,66,1.0]},"tr":[[94,66,12797.4]],"skus":[[21,12797.4,66]]},{"reg":"Новосибирская область","name":"Памир ООО","fo":"СФО","okb":400.0,"mname":"Памир ООО оптовик","how":"по префиксу","kg":10665.6,"akb":32,"sku":1.5312,"nsku":2,"p":{"5":[5883.9,25,1.0],"0":[4781.7,24,1.0]},"tr":[[2,6,993.3],[37,1,257.4],[60,25,9414.9]],"skus":[[71,5883.9,25],[22,4781.7,24]]},{"reg":"Брянская область","name":"Крестьянов В.В. ИП","fo":"ЦФО","okb":75.0,"mname":null,"how":"точно","kg":10352.57,"akb":31,"sku":1.0,"nsku":1,"p":{"0":[10352.57,31,1.0]},"tr":[[10,28,7986.47],[55,1,316.8],[63,1,1864.5],[78,1,184.8]],"skus":[[21,10352.57,31]]},{"reg":"Саха (Якутия) республика","name":"Инко Трейд ООО","fo":"ДФО","okb":250.0,"mname":null,"how":"точно","kg":10086.9,"akb":26,"sku":1.8846,"nsku":6,"p":{"5":[5335.6,19,1.211],"0":[4751.3,15,1.733]},"tr":[[66,1,1.0],[73,25,10085.9]],"skus":[[70,3316.0,11],[21,2102.1,9],[22,1729.2,11],[57,1211.1,11],[24,920.0,6],[71,808.5,1]]},{"reg":"Томская область","name":"Морепродукт ООО","fo":"СФО","okb":100.0,"mname":null,"how":"точно","kg":8738.4,"akb":29,"sku":1.1034,"nsku":2,"p":{"0":[8738.4,29,1.103]},"tr":[[83,29,8738.4]],"skus":[[21,7682.4,25],[20,1056.0,7]]},{"reg":"Краснодарский край","name":"АгроАльянс ООО","fo":"ЮФО","okb":1352.0,"mname":null,"how":"точно","kg":8459.8,"akb":252,"sku":1.0714,"nsku":3,"p":{"5":[1946.0,128,1.0],"8":[26.0,14,1.0],"0":[6487.8,128,1.0]},"tr":[[0,25,911.0],[41,227,7548.8]],"skus":[[21,6487.8,128],[68,1946.0,128],[59,26.0,14]]},{"reg":"Республика Крым","name":"КОСМОС ООО","fo":"ЮФО","okb":450.0,"mname":null,"how":"точно","kg":8319.3,"akb":12,"sku":1.0,"nsku":1,"p":{"4":[8319.3,12,1.0]},"tr":[[68,12,8319.3]],"skus":[[105,8319.3,12]]},{"reg":"Челябинская область","name":"Федоров С.Ю. ИП","fo":"УрФО","okb":197.0,"mname":null,"how":"точно","kg":6739.3,"akb":51,"sku":1.2745,"nsku":6,"p":{"8":[51.0,17,1.0],"0":[6512.7,37,1.081],"4":[175.6,7,1.143]},"tr":[[55,1,4.3],[94,50,6735.0]],"skus":[[21,6002.7,37],[24,510.0,3],[111,171.6,4],[59,51.0,17],[72,3.5,3],[73,0.5,1]]},{"reg":"Московская область","name":"Руснаб-трейд ООО","fo":"ЦФО","okb":30.0,"mname":null,"how":"точно","kg":6560.0,"akb":28,"sku":1.2143,"nsku":2,"p":{"9":[6560.0,28,1.214]},"tr":[[13,1,60.0],[14,1,15.0],[31,1,60.0],[34,1,1110.0],[46,2,1125.0],[55,18,3125.0],[61,1,260.0],[68,1,70.0],[81,1,15.0],[89,1,720.0]],"skus":[[223,6150.0,25],[222,410.0,9]]},{"reg":"Омская область","name":"Вологин А.Ю. ИП","fo":"СФО","okb":392.0,"mname":null,"how":"точно","kg":6510.9,"akb":113,"sku":1.2301,"nsku":4,"p":{"0":[5468.1,104,1.154],"4":[1042.8,19,1.0]},"tr":[[55,1,10.0],[57,1,6.6],[60,10,155.2],[61,99,6296.2],[86,2,42.9]],"skus":[[24,2640.0,25],[21,2415.6,82],[105,1042.8,19],[20,412.5,13]]},{"reg":"Калининградская область","name":"Легко ООО","fo":"СЗФО","okb":150.0,"mname":null,"how":"точно","kg":6347.4,"akb":182,"sku":1.8626,"nsku":22,"p":{"5":[4283.7,149,1.101],"8":[441.0,78,1.218],"0":[1032.2,26,1.115],"10":[11.0,5,1.0],"4":[173.5,20,1.2],"3":[346.0,10,1.9],"1":[60.0,3,1.0]},"tr":[[31,182,6347.4]],"skus":[[68,2494.0,124],[61,1100.0,14],[21,768.9,24],[57,679.8,23],[59,346.0,76],[25,260.0,4],[110,174.0,7],[119,120.0,5],[111,79.2,6],[109,60.0,3],[58,44.0,7],[60,40.0,2],[235,35.0,16],[72,30.5,9],[140,20.0,1],[130,20.0,2],[236,20.0,1],[105,19.8,2],[108,12.0,4],[62,11.0,5],[71,9.9,3],[22,3.3,1]]},{"reg":"Татарстан республика","name":"Нори ООО","fo":"ПФО","okb":300.0,"mname":"Нори ООО закрылся","how":"по префиксу","kg":6128.7,"akb":65,"sku":1.3846,"nsku":5,"p":{"5":[621.0,8,1.0],"0":[4547.4,63,1.159],"4":[960.3,7,1.286]},"tr":[[38,2,46.2],[51,7,247.5],[81,51,5580.9],[87,5,254.1]],"skus":[[21,3768.6,55],[105,937.2,6],[20,778.8,18],[68,621.0,8],[111,23.1,3]]},{"reg":"Краснодарский край","name":"КОСМОС ООО","fo":"ЮФО","okb":800.0,"mname":null,"how":"точно","kg":5573.7,"akb":22,"sku":1.0,"nsku":1,"p":{"0":[5573.7,22,1.0]},"tr":[[41,22,5573.7]],"skus":[[22,5573.7,22]]},{"reg":"Московская область","name":"Маммедов ООО","fo":"ЦФО","okb":null,"mname":"Маммедов ООО Фудсити","how":"по префиксу","kg":4928.3,"akb":18,"sku":1.3889,"nsku":4,"p":{"0":[4743.5,18,1.333],"4":[184.8,1,1.0]},"tr":[[5,1,194.8],[10,1,89.3],[41,1,770.0],[55,7,1381.3],[82,6,1302.9],[87,2,1190.0]],"skus":[[25,4430.0,15],[20,207.9,4],[111,184.8,1],[21,105.6,5]]},{"reg":"Татарстан республика","name":"АгроАльянс ООО","fo":"ПФО","okb":null,"mname":null,"how":"точно","kg":3768.9,"akb":78,"sku":1.1026,"nsku":7,"p":{"6":[57.0,1,3.0],"8":[6.0,4,1.0],"0":[3603.6,68,1.074],"4":[102.3,6,1.0]},"tr":[[51,1,6.6],[58,15,149.0],[81,62,3613.3]],"skus":[[21,2857.8,59],[20,745.8,14],[105,102.3,6],[165,27.0,1],[41,15.0,1],[170,15.0,1],[59,6.0,4]]},{"reg":"Новосибирская область","name":"Гелиос ООО","fo":"СФО","okb":700.0,"mname":null,"how":"точно","kg":2488.4,"akb":28,"sku":1.0714,"nsku":3,"p":{"5":[20.0,1,1.0],"0":[917.4,15,1.0],"4":[1551.0,14,1.0]},"tr":[[2,15,1577.4],[3,2,39.6],[42,2,392.9],[60,7,399.3],[73,2,79.2]],"skus":[[105,1551.0,14],[22,917.4,15],[61,20.0,1]]},{"reg":"Московская область","name":"Корнева О.В. ИП","fo":"ЦФО","okb":null,"mname":null,"how":"точно","kg":2181.3,"akb":24,"sku":1.0,"nsku":1,"p":{"0":[2181.3,24,1.0]},"tr":[[55,1,56.1],[84,23,2125.2]],"skus":[[21,2181.3,24]]},{"reg":"Дагестан республика","name":"Юнекс ООО","fo":"СКФО","okb":1500.0,"mname":null,"how":"точно","kg":2098.8,"akb":13,"sku":1.0769,"nsku":2,"p":{"0":[1894.2,11,1.0],"4":[204.6,3,1.0]},"tr":[[5,2,1808.4],[19,9,280.5],[57,1,3.3],[95,1,6.6]],"skus":[[21,1894.2,11],[105,204.6,3]]},{"reg":"Саратовская область","name":"АгроАльянс ООО","fo":"ПФО","okb":1500.0,"mname":null,"how":"точно","kg":1719.3,"akb":55,"sku":1.0182,"nsku":2,"p":{"0":[1221.0,49,1.0],"4":[498.3,7,1.0]},"tr":[[72,55,1719.3]],"skus":[[21,1221.0,49],[105,498.3,7]]},{"reg":"Красноярский край","name":"Элит Трейд ТД ООО","fo":"СФО","okb":700.0,"mname":null,"how":"точно","kg":1654.4,"akb":76,"sku":1.1711,"nsku":6,"p":{"5":[428.0,37,1.0],"0":[1016.1,35,1.2],"4":[36.3,1,1.0],"3":[174.0,9,1.0]},"tr":[[29,13,354.6],[42,60,1214.1],[90,3,85.7]],"skus":[[21,557.7,24],[68,428.0,37],[24,300.0,12],[77,174.0,9],[20,158.4,6],[111,36.3,1]]},{"reg":"Воронежская область","name":"КОСМОС ООО","fo":"ЦФО","okb":700.0,"mname":null,"how":"точно","kg":1351.5,"akb":7,"sku":1.1429,"nsku":2,"p":{"0":[1351.5,7,1.143]},"tr":[[8,4,684.4],[44,2,617.1],[80,1,50.0]],"skus":[[20,1171.5,5],[24,180.0,3]]},{"reg":"Московская область","name":"Успех ООО Москва","fo":"ЦФО","okb":75.0,"mname":"Успех ООО Москва В2В","how":"по префиксу","kg":528.5,"akb":13,"sku":1.1538,"nsku":7,"p":{"5":[19.8,2,1.0],"6":[1.0,1,1.0],"0":[458.7,5,1.0],"4":[10.0,1,1.0],"3":[36.0,5,1.0],"7":[3.0,1,1.0]},"tr":[[55,13,528.5]],"skus":[[21,455.4,4],[67,36.0,5],[71,19.8,2],[82,10.0,1],[22,3.3,1],[75,3.0,1],[65,1.0,1]]},{"reg":"Ленинградская область","name":"Меридиан ООО","fo":"СЗФО","okb":1000.0,"mname":null,"how":"точно","kg":435.0,"akb":15,"sku":1.0,"nsku":2,"p":{"6":[429.0,13,1.0],"3":[6.0,2,1.0]},"tr":[[46,15,435.0]],"skus":[[65,429.0,13],[77,6.0,2]]},{"reg":"Ленинградская область","name":"Гермес ТК ООО","fo":"СЗФО","okb":130.0,"mname":null,"how":"точно","kg":396.0,"akb":2,"sku":1.5,"nsku":2,"p":{"0":[0.0,2,1.0],"4":[396.0,1,1.0]},"tr":[[46,2,396.0]],"skus":[[111,396.0,1],[21,0.0,2]]},{"reg":"Новосибирская область","name":"СибМК ООО","fo":"СФО","okb":1000.0,"mname":null,"how":"точно","kg":19.8,"akb":2,"sku":1.0,"nsku":1,"p":{"0":[19.8,2,1.0]},"tr":[[37,1,9.9],[83,1,9.9]],"skus":[[21,19.8,2]]}],"cat":{"2":["Неизвестный продукт",12,31.0,1,1],"7":["Ацетилированный дикрахмалфосфат (мешок 20 кг)",9,320.0,4,2],"8":["Концентрат молочных белков (мешок 10 кг)",9,10.0,1,1],"13":["Лактоза 80 (мешок 25 кг)",9,375.0,1,1],"20":["Милетто Крем со вкусом сыра сливочного (3,3 кг)",0,493899.7,2553,79],"21":["Милетто Сыр творожный сливочный (3,3 кг)",0,1716219.5,12075,112],"22":["Милетто ROLL CHEESE Сыр творожный  (3,3 кг)",0,71599.0,585,31],"23":["Милетто ROLL CHEESE Сыр творожный сливочный (пакет 1 кг)",0,187.0,14,3],"24":["Милетто Сыр творожный сливочный (10 кг)",0,206450.0,623,40],"25":["Милетто Сыр творожный сливочный (10 кг) СИНИЙ ПАКЕТ",0,13260.0,78,7],"27":["Милетто ROLL CHEESE Сыр творожный  (10 кг)",0,3190.0,9,4],"33":["Лакоминка Йогурт Злаки (3 кг)",6,864.0,11,2],"36":["Лакоминка Йогурт Абрикос (3 кг)",6,1593.0,17,5],"37":["Лакоминка Йогурт Абрикос и манго (3 кг)",6,1737.0,14,3],"39":["Лакоминка Йогурт Вишня (3 кг)",6,1677.0,11,2],"41":["Лакоминка Йогурт Клубника (3 кг)",6,2007.0,19,5],"42":["Лакоминка Йогурт Клюква и малина (3 кг)",6,114.0,4,2],"43":["Лакоминка Йогурт Лесные ягоды (3 кг)",6,1636.0,11,2],"44":["Лакоминка Йогурт Черника (3 кг)",6,1575.0,11,3],"45":["Лакоминка Десерт воздушный Абрикос-Манго (3 кг)",4,60.0,1,1],"50":["Лакоминка Десерт воздушный Черника (3 кг)",4,126.0,2,1],"56":["FriendChef Творог оригинальный ТУ обезжиренный  (короб 10 кг)",7,15830.0,21,8],"57":["FriendChef CREAM CHEESE Сыр творожный (3,3 кг)",5,111942.2,1353,42],"58":["FriendChef Сыр Сулугуни (1,0 кг)",4,9275.2,290,23],"59":["FriendChef Сыр Маскарпоне (0,5 кг)",8,11804.0,902,47],"60":["FriendChef Сыр Маскарпоне (10 кг)",8,26810.0,25,10],"61":["FriendChef CREAM CHEESE Сыр творожный (10 кг)",5,96110.0,240,18],"62":["FriendChef Сыр Моцарелла (1,0 кг)",10,1512.0,43,10],"64":["FriendChef Йогурт греческий без наполнителя 7,0%  (3 кг)",6,49956.0,240,29],"65":["FriendChef Йогурт греческий без наполнителя 7,0% \"NEW\" (1 кг)",6,136311.0,2711,43],"67":["FriendChef Сметана ГОСТ 20% (3 кг)",3,96817.0,561,24],"68":["FriendChef Сыр творожный сливочный (пакет 1 кг)",5,367435.5,6914,65],"69":["FriendChef Творог ГОСТ 9%  (короб 10 кг) СИНИЙ ПАКЕТ",7,42750.0,102,13],"70":["FriendChef CREAM CHEESE Сыр творожный (1 кг)",5,8008.0,103,5],"71":["FriendChef DARIOLE CHEESE Сыр творожный (3,3 кг)",5,98639.0,394,35],"72":["FriendChef Сыр плавленый сливочный (0,5 кг)",4,2349.5,53,17],"73":["FriendChef Сыр плавленый шоколадный (0,5 кг)",4,75.0,9,3],"75":["FriendChef Творог ГОСТ 9%  (3 кг)",7,38068.5,535,28],"76":["FriendChef Творог ГОСТ 9% (короб 10 кг) СИНИЙ ПАКЕТ",7,320.0,2,1],"77":["FriendChef Сметана ГОСТ 20% (1 кг)",3,49361.0,1288,20],"78":["FriendChef Творог ГОСТ 9% (10 кг)",7,6410.0,11,5],"79":["FriendChef Творог оригинальный ТУ 9%  (короб 10 кг)",7,250.0,6,1],"80":["FriendChef Сметана ГОСТ 30% (10 кг)",3,97910.0,40,13],"81":["FriendChef DARIOLE CHEESE Сыр творожный (10 кг)",5,21210.0,72,11],"82":["FriendChef Сыр плавленый сливочный (10 кг)",4,8630.0,40,13],"83":["FriendChef Творог ГОСТ 5% (короб 10 кг) СИНИЙ ПАКЕТ",7,1390.0,9,4],"84":["FriendChef Сметана ГОСТ 20% (10 кг)",3,17740.0,13,6],"86":["FriendChef Масло сливочное \"Традиционное\" 82,5% (короб 20 кг)",11,1340.0,1,1],"87":["FriendChef Творог пастообразный ТУ 5%  (10 кг)",7,10.0,1,1],"89":["FriendChef CREAM CHEESE Сыр творожный сливочный  65%  (10 кг)",5,30.0,2,1],"101":["Bakery Mix Продукт створоженный \"Лидер\" (короб 10 кг)",1,599791.2,1375,23],"102":["Bakery Mix Продукт створоженный \"Флагман\" (короб 10 кг)",1,678419.9,530,29],"103":["Bakery Mix Продукт створоженный \"Аппетитный\" (короб 10 кг)",2,819981.0,362,23],"104":["Bakery Mix Крем на растительных маслах \"Аппетитный\" (короб 10 кг)",2,279160.0,27,3],"105":["Bakery Mix Профессиональный продукт со вкусом сыра \"Токио\" (3,3 кг)",4,451933.9,1480,61],"106":["Bakery Mix Профессиональный продукт со вкусом сыра \"Italiano\" (1 кг)",4,14.4,3,1],"107":["Bakery Mix Продукт створоженный \"Люкс\" (короб 10 кг)",2,78160.0,103,17],"108":["Bakery Mix Паста по технологии сметаны \"Сдобная\" (3 кг)",3,107694.0,646,19],"109":["Bakery Mix Продукт створоженный \"Фаворит\" (короб 10 кг)",1,209410.0,274,18],"110":["Bakery Mix Паста по технологии сметаны \"Нежная\" (3 кг)",3,155541.0,1356,32],"111":["Bakery Mix Крем кулинарный \"Париж\" (3,3 кг)",4,317814.5,840,55],"113":["Bakery Mix Маргарин створоженный \"Флагман\" (короб 10 кг)",1,200.0,1,1],"116":["Bakery Mix Крем десертный \"Шоколадный\" (3,5 кг)",4,14.0,1,1],"117":["Bakery Mix Продукт створоженный \"Изысканный\" (короб 10 кг)",2,73922.0,92,12],"118":["Bakery Mix Продукт створоженный \"Узловский\" (короб 10 кг)",2,305603.8,232,15],"119":["Bakery Mix Паста по технологии сметаны \"Воздушная\" (короб 10 кг)",3,70640.0,44,9],"130":["Bakery Mix Паста по технологии сметаны \"Сдобная\" (короб 10 кг)",3,76860.0,64,15],"132":["Bakery Mix Продукт створоженный \"Особый\" (короб 10 кг)",1,279077.0,165,21],"134":["Bakery Mix Продукт створоженный \"Узловский\" (короб 5 кг)",2,108180.0,283,14],"135":["Bakery Mix Продукт створоженный \"Аппетитный\" (короб 5 кг)",2,58000.0,298,12],"136":["Bakery Mix Крем на растительных маслах \"Париж\" (3,3 кг)",4,7844.1,16,3],"137":["Bakery Mix Маргарин по технологии сметаны \"Воздушный\" (короб 10 кг)",3,40.0,1,1],"138":["Bakery Mix Продукт створоженный \"Аппетитный\" (3 кг)",2,5.0,1,1],"140":["Bakery Mix Паста по технологии сметаны \"Нежная\" (короб 10 кг)",3,143320.0,197,19],"142":["Bakery Mix Маргарин створоженный \"Фаворит\" (короб 10 кг)",1,140.0,1,1],"143":["Bakery Mix Крем на растительных маслах \"Токио\" (3,3 кг)",4,15249.3,30,2],"149":["Bakery Mix Продукт створоженный \"Южный\" (короб 10кг)",2,37600.0,54,5],"165":["Лакоминка Йогурт с абрикосом (3 кг)",6,2118.0,134,20],"166":["Лакоминка Йогурт с абрикосом и манго (3 кг)",6,5712.0,206,22],"168":["Лакоминка Йогурт с вишней (3 кг)",6,38498.9,549,34],"170":["Лакоминка Йогурт с клубникой (3 кг)",6,8900.7,272,27],"171":["Лакоминка Йогурт с клюквой и малиной (3 кг)",6,762.0,61,19],"172":["Лакоминка Йогурт с лесными ягодами (3 кг)",6,4473.5,225,24],"173":["Лакоминка Йогурт со злаками (3 кг)",6,4242.0,179,23],"174":["Лакоминка Йогурт с черникой (3 кг)",6,15604.0,287,26],"211":["Концентрат молочных белков сухой 85% (пакет 1 кг)",9,45.0,5,2],"216":["FriendChef Сыр Моцарелла, пульки (пакет 1 кг)",10,1083.0,50,16],"218":["Милетто Крем со вкусом сыра сливочного (10 кг)",0,120.0,5,2],"219":["Bakery Mix Крем кулинарный \"Париж\" (10 кг)",4,10.0,1,1],"221":["Казеин мицеллярный сухой (мешок 10 кг)",9,20.0,1,1],"222":["Концентрат молочных белков сухой 85% (мешок 10 кг)",9,700.0,12,2],"223":["Концентрат молочных белков сухой 85% (мешок 15 кг)",9,15060.0,42,10],"230":["Лукоморье Масло сливочное \"Крестьянское\" м.д.ж. 72,5% (0,18кг) ТУБА",11,37.8,3,2],"231":["Концентрат молочных белков 85% безлактозный сухой (мешок 15 кг)",9,240.0,3,1],"233":["Лукоморье Масло сливочное Шоколадное 62% (0,18 кг)",11,2.9,6,1],"235":["FriendChef Сыр Маскарпоне, лонг (0,5 кг)",8,86.0,35,6],"236":["FriendChef Сыр Маскарпоне, лонг (10 кг)",8,30.0,2,2],"237":["Милетто Сыр творожный сливочный (11 кг) СИНИЙ ПАКЕТ",0,5005.0,4,3],"238":["Пермеат молочный сухой (мешок 25кг)",9,2150.0,3,3],"240":["FriendChef Сыр Маскарпоне (3 кг)",8,3873.0,8,2],"245":["FriendChef Крем Чиз Сыр творожный (пакет 1 кг)",5,20.0,13,1],"246":["FriendChef Крем Чиз Сыр творожный (10 кг)",5,330.0,3,1],"247":["FriendChef Крем Чиз Сыр творожный (3,3 кг)",5,22074.7,364,11]},"tregs":[["Адыгея республика","ЮФО",910,344.1],["Актюбинская область","Вне карты",null,null],["Алтайский край","СФО",2903,1100.5],["Амурская область","ДФО",1065,477.6],["Архангельская область","СЗФО",1461,737.2],["Астраханская область","ЮФО",1324,684.2],["Атырауская область","Вне карты",null,null],["Башкортостан республика","ПФО",5159,2545.2],["Белгородская область","ЦФО",2443,1276.4],["Брестская область","Вне карты",null,null],["Брянская область","ЦФО",1256,661.7],["Бурятия республика","ДФО",1502,586.6],["Витебская область","Вне карты",null,null],["Владимирская область","ЦФО",1850,922],["Волгоградская область","ЮФО",3296,1692],["Вологодская область","СЗФО",1386,842],["Воронежская область","ЦФО",3890,1744.1],["Гомельская область","Вне карты",null,null],["Гродненская область","Вне карты",null,null],["Дагестан республика","СКФО",4800,1633],["Донецкая","ЮФО",0,0],["Донецкая область","ЮФО",0,0],["Еврейская автономная область","ДФО",154,67.1],["Забайкальский край","ДФО",1235,498.8],["Западно-Казахстанская область","Вне карты",null,null],["Запорожская","ЮФО",0,0],["Запорожская область","ЮФО",0,0],["Ивановская область","ЦФО",1189,454.5],["Ингушетия республика","СКФО",232,114.1],["Иркутская область","СФО",3904,2110.3],["Кабардино-Балкарская республика","СКФО",1394,472.2],["Калининградская область","СЗФО",2601,1348.4],["Калмыкия республика","ЮФО",393,170.9],["Калужская область","ЦФО",1581,964.2],["Камчатский край","ДФО",618,303.8],["Карачаево-Черкесская республика","СКФО",942,269.7],["Карелия республика","СЗФО",938,457.2],["Кемеровская область","СФО",3069,1735],["Кировская область","ПФО",1745,813.5],["Коми республика","СЗФО",1190,688.7],["Костромская область","ЦФО",731,362],["Краснодарский край","ЮФО",15552,6977.4],["Красноярский край","СФО",3943,1981.8],["Курганская область","УрФО",820,409.5],["Курская область","ЦФО",1322,662.8],["Кызылординская область","Вне карты",null,null],["Ленинградская область","СЗФО",15979,9563],["Липецкая область","ЦФО",1540,786.4],["Луганская","—",null,null],["Луганская область","ЮФО",0,0],["Мангистауская область","Вне карты",null,null],["Марий Эл республика","ПФО",808,394],["Минская область","Вне карты",null,null],["Могилёвская область","Вне карты",null,null],["Мордовия республика","ПФО",708,403.7],["Московская область","ЦФО",41197,25657.8],["Мурманская область","СЗФО",1008,535],["Не указан","—",null,null],["Нижегородская область","ПФО",3941,1957.3],["Новгородская область","СЗФО",888,387.1],["Новосибирская область","СФО",5060,2832.7],["Омская область","СФО",2354,1464.6],["Оренбургская область","ПФО",2398,1128.8],["Орловская область","ЦФО",714,402],["Пензенская область","ПФО",1546,678.7],["Пермский край","ПФО",4053,1970.2],["Приморский край","ДФО",3242,1738.6],["Псковская область","СЗФО",1034,489.5],["Республика Крым","ЮФО",4378,1648.9],["Ростовская область","ЮФО",6731,3496.2],["Рязанская область","ЦФО",1473,719.3],["Самарская область","ПФО",4294,2322.9],["Саратовская область","ПФО",2885,1662.7],["Саха (Якутия) республика","ДФО",1359,669.6],["Сахалинская область","ДФО",924,513.5],["Свердловская область","УрФО",6363,3253],["Северная Осетия-Алания республика","СКФО",1164,497.5],["Северо-Казахстанская область","Вне карты",null,null],["Смоленская область","ЦФО",1276,571.9],["Ставропольский край","СКФО",4222,2021.3],["Тамбовская область","ЦФО",980,459.9],["Татарстан республика","ПФО",5729,3169.4],["Тверская область","ЦФО",1671,780.3],["Томская область","СФО",1309,873.9],["Тульская область","ЦФО",1827,830.8],["Тыва республика","СФО",432,147.5],["Тюменская область","УрФО",2679,1448.6],["Удмуртская республика","ПФО",2057,961.5],["Ульяновская область","ПФО",1302,739.2],["Хабаровский край","ДФО",1831,1284.1],["Хакасия республика","СФО",769,357.3],["Ханты-Мансийский автономный округ","УрФО",2573,1444.8],["Херсонская","Вне карты",null,null],["Херсонская область","Вне карты",null,null],["Челябинская область","УрФО",4931,2824.5],["Чеченская республика","СКФО",1757,661.3],["Чувашская республика","ПФО",1617,861],["Чукотский автономный округ","ДФО",54,9.2],["Ямало-Ненецкий автономный округ","УрФО",921,559.4],["Ярославская область","ЦФО",1854,1006.3]],"ytdMonths":10,"totalKg":8841037.7}</script>
+<script>
+"use strict";
+const DATA=JSON.parse(document.getElementById('data').textContent);
+const P=DATA.products, NP=P.length, D=DATA.dist, TR=DATA.tregs;
+const SHORT={'FriendChef (творожные сыры)':'FriendChef: творожные сыры','Продукт для сырников и блинов':'Продукт для сырников','Творога для кондитеров':'Творога для кондитеров'};
+const pn=g=>SHORT[P[g]]||P[g];
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const nf0=new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}), nf1=new Intl.NumberFormat('ru-RU',{maximumFractionDigits:1,minimumFractionDigits:1}), nf2=new Intl.NumberFormat('ru-RU',{maximumFractionDigits:2,minimumFractionDigits:2});
+const f0=x=>nf0.format(x), f1=x=>nf1.format(x), f2=x=>nf2.format(x);
+const pc=(x,d=0)=>isFinite(x)?(x*100).toFixed(d).replace('.',',')+'%':'—';
+const sgn=x=>(x>=0?'+':'−')+f0(Math.abs(x));
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const C={akb:'#199e70',prod:'#d55181',sku:'#c98500',org:'#8a897f',base:'#5d5c57',ink:'#f0efec'};
+
+/* ---------- precompute ---------- */
+const FOS=[...new Set(D.map(d=>d.fo))].sort();
+D.forEach((d,i)=>{d.i=i;d.kgP=Array(NP).fill(0);d.nP=Array(NP).fill(0);d.sP=Array(NP).fill(0);
+  for(const g in d.p){d.kgP[g]=d.p[g][0];d.nP[g]=d.p[g][1];d.sP[g]=d.p[g][2];}});
+const TOTAKB=D.reduce((a,d)=>a+d.akb,0);
+const NET={kgTT:Array(NP).fill(0),s:Array(NP).fill(0),pen:Array(NP).fill(0)};
+for(let g=0;g<NP;g++){let kg=0,n=0,sn=0;D.forEach(d=>{kg+=d.kgP[g];n+=d.nP[g];sn+=d.nP[g]*d.sP[g]});
+  NET.kgTT[g]=n?kg/n:0;NET.s[g]=n?sn/n:1;NET.pen[g]=n/TOTAKB;}
+const big=D.filter(d=>d.akb>=50).map(d=>d.sku).sort((a,b)=>a-b);
+const q=p=>big[Math.min(big.length-1,Math.floor(p*(big.length-1)+.5))];
+const SKUT={med:q(.5),p75:q(.75),max:big[big.length-1]};
+
+/* ---------- state ---------- */
+const DEF=()=>({on:{akb:true,prod:true,sku:true},mapView:'after',k:1.2,org:0,fo:new Set(FOS),minAkb:0,onlyOkb:false,cap:true,
+  l1:{mode:'mult',mult:1,share:0},l2:{t:0,eff:1},l3:Array(NP).fill(0),ov:{},sort:{k:'dPlan',dir:-1},q:'',tab:'dist',preset:'base'});
+let S=DEF();
+const ovOf=i=>S.ov[i]||(S.ov[i]={});
+
+/* ---------- engine ---------- */
+function calc(){
+  const K=S.k, o=1+S.org/100;
+  const rows=[], agg={ytd:0,base:0,org:0,d1:0,d2:0,d3:0,scopeV:0,
+    prod:Array.from({length:NP},()=>({base:0,org:0,d1:0,d2:0,d3:0})),reg:TR.map(()=>({a:0,base:0,d:0,d1:0,d2:0,d3:0})),fo:{}};
+  for(const d of D){
+    const ov=S.ov[d.i]||{};
+    const okb=ov.okb!=null?ov.okb:d.okb;
+    const inScope=S.fo.has(d.fo)&&d.akb>=S.minAkb&&(!S.onlyOkb||!!okb);
+    const A0=d.akb, S0=d.sku, V0g=d.kgP.map(x=>x*K/1000), V0=V0g.reduce((a,b)=>a+b,0);
+    const org=V0*(o-1);
+    // lever 1
+    let A1=A0;
+    if(!S.on.akb){}
+    else if(ov.akb!=null) A1=Math.max(1,ov.akb);
+    else if(inScope){
+      if(S.l1.mode==='mult') A1=A0*S.l1.mult;
+      else if(S.l1.share>0&&okb) A1=Math.max(A0,S.l1.share*okb);
+      if(S.cap&&okb) A1=Math.min(A1,Math.max(A0,okb));
+    }
+    const m1=A1/A0, V1g=V0g.map(x=>x*m1), d1=V0*(m1-1);
+    // lever 3
+    const d3g=Array(NP).fill(0); let dS3=0;
+    const pov=ov.p||{};
+    for(let g=0;g<NP;g++){
+      if(!S.on.prod) break;
+      const tgt=pov[g]!=null?pov[g]:(inScope?S.l3[g]:0);
+      if(!(tgt>0)) continue;
+      const p0=d.nP[g]/A0;
+      if(tgt<=p0) continue;
+      const v=d.nP[g]>0?V0g[g]/d.nP[g]:NET.kgTT[g]*K/1000;
+      const s=d.nP[g]>0?d.sP[g]:NET.s[g];
+      d3g[g]=A1*(tgt-p0)*v; dS3+=(tgt-p0)*s;
+    }
+    const d3=d3g.reduce((a,b)=>a+b,0);
+    // lever 2
+    const sTgt=!S.on.sku?0:(ov.sku!=null?ov.sku:(inScope?S.l2.t:0));
+    const S1pre=S0+dS3;
+    const dS2=sTgt>0?Math.max(0,sTgt-S1pre):0;
+    const vbar=V0/(A0*S0);
+    const d2=A1*dS2*vbar*S.l2.eff;
+    const tot1=V1g.reduce((a,b)=>a+b,0);
+    const d2g=V1g.map(x=>tot1>0?d2*x/tot1:0);
+    const plan=V0+org+d1+d2+d3;
+    const S1=S1pre+dS2;
+    const r={d,i:d.i,okb,inScope,A0,A1,S0,S1,V0,org,d1,d2,d3,plan,dPlan:plan-V0,dPct:V0?(plan-V0)/V0:0,
+      sh0:okb?A0/okb:NaN,sh1:okb?A1/okb:NaN,V0g,V1g,d3g,d2g};
+    rows.push(r);
+    agg.ytd+=d.kgP.reduce((a,b)=>a+b,0)/1000; agg.base+=V0; agg.org+=org; agg.d1+=d1; agg.d2+=d2; agg.d3+=d3;
+    if(inScope||ov.akb!=null||ov.sku!=null||ov.p) agg.scopeV+=V0;
+    const inFO=S.fo.has(d.fo);
+    if(inFO)for(let g=0;g<NP;g++){const a=agg.prod[g];a.base+=V0g[g];a.org+=V0g[g]*(o-1);a.d1+=V0g[g]*(m1-1);a.d3+=d3g[g];a.d2+=d2g[g];}
+    const dt=plan-V0, kt=d.tr.reduce((a,t)=>a+t[2],0);
+    const fo=agg.fo[d.fo]||(agg.fo[d.fo]={base:0,d1:0,d2:0,d3:0,org:0,a:0});
+    fo.base+=V0;fo.org+=org;fo.d1+=d1;fo.d2+=d2;fo.d3+=d3;
+    if(inFO)for(const t of d.tr){const w=kt>0?t[2]/kt:0, R=agg.reg[t[0]];
+      R.a+=t[1]*m1; R.base+=V0*w; R.d1+=d1*w; R.d2+=d2*w; R.d3+=d3*w; R.d+=(dt)*w; R.org=(R.org||0)+org*w;}
+  }
+  agg.plan=agg.base+agg.org+agg.d1+agg.d2+agg.d3;
+  agg.akb0=TOTAKB; agg.akb1=rows.reduce((a,r)=>a+r.A1,0);
+  return {rows,agg};
+}
+let R=null;
+
+/* ---------- tooltip ---------- */
+const tip=$('#tip');
+function showTip(html,e){tip.innerHTML=html;tip.style.opacity=1;const w=tip.offsetWidth,h=tip.offsetHeight;let x=e.clientX+14,y=e.clientY+14;if(x+w>innerWidth-8)x=e.clientX-w-14;if(y+h>innerHeight-8)y=e.clientY-h-14;tip.style.left=x+'px';tip.style.top=y+'px';}
+function hideTip(){tip.style.opacity=0}
+document.addEventListener('mousemove',e=>{const t=e.target.closest&&e.target.closest('[data-tip]');if(t)showTip(t.dataset.tip,e);else hideTip();});
+document.addEventListener('mouseleave',hideTip);
+
+/* ---------- render: hero ---------- */
+function renderHero(){
+  const a=R.agg, dl=a.plan-a.base;
+  $('#hPlan').textContent=f0(a.plan);
+  $('#hDelta').textContent=sgn(dl)+' т к базе';
+  $('#hPct').textContent=pc(dl/a.base,1);
+  $('#hYtd').textContent=f0(a.ytd)+' т';
+  $('#hBase').textContent=f0(a.base)+' т';
+  $('#hScope').textContent=pc(a.scopeV/a.base)+' базы';
+  const parts=[['org',a.org],['akb',a.d1],['prod',a.d3],['sku',a.d2]];
+  const tot=parts.reduce((s,p)=>s+Math.max(0,p[1]),0)||1;
+  $('#hSplit').innerHTML=parts.map(([k,v])=>v>0.5?`<i style="width:${v/tot*100}%;background:var(--${k})" data-tip="<b>${{org:'Органика',akb:'АКБ',prod:'Продукты в АКБ',sku:'SKU на точку'}[k]}</b><br>${sgn(v)} т"></i>`:'').join('')||'';
+  $('#g1').innerHTML=S.on.akb?sgn(a.d1)+'<small>т</small>':'выкл.';
+  $('#g2').innerHTML=S.on.sku?sgn(a.d2)+'<small>т</small>':'выкл.';
+  $('#g3').innerHTML=S.on.prod?sgn(a.d3)+'<small>т</small>':'выкл.';
+  $$('.legend span[data-lg]').forEach(s=>s.classList.toggle('offl',!S.on[s.dataset.lg]));
+  renderWf();
+}
+function renderWf(){
+  const a=R.agg, W=760,H=330,L=54,Rr=14,T=26,B=46;
+  const steps=[['База 2026',a.base,'tot','#5d5c57'],['Органика',a.org,'d',C.org],['АКБ',a.d1,'d',C.akb],['Продукты',a.d3,'d',C.prod],['SKU на точку',a.d2,'d',C.sku],['План 2027',a.plan,'tot',C.ink]];
+  const lo0=Math.max(0,Math.floor(a.base*0.82/1000)*1000), hi=a.plan>a.base?a.plan:a.base;
+  const maxTop=Math.max(a.base,a.plan,a.base+Math.max(0,a.org)+Math.max(0,a.d1)+Math.max(0,a.d3)+Math.max(0,a.d2));
+  const hi2=Math.ceil(maxTop*1.04/1000)*1000, lo=lo0;
+  const y=v=>T+(H-T-B)*(1-(v-lo)/(hi2-lo));
+  const bw=(W-L-Rr)/steps.length, pad=bw*.2;
+  let s='';
+  const nt=4;
+  for(let i=0;i<=nt;i++){const v=lo+(hi2-lo)*i/nt;s+=`<line x1="${L}" x2="${W-Rr}" y1="${y(v)}" y2="${y(v)}" stroke="#2c2c2a"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end" fill="#aeada4" font-size="11.5">${f0(v)}</text>`;}
+  let run=0;
+  steps.forEach((st,i)=>{
+    const x=L+i*bw+pad/2, w=bw-pad; let y0,y1;
+    if(st[2]==='tot'){y0=y(lo);y1=y(st[1]);run=st[1];}
+    else{const a0=run,a1=run+st[1];y0=y(Math.min(a0,a1));y1=y(Math.max(a0,a1));
+      const tmp=y0;y0=y(Math.min(a0,a1));y1=y(Math.max(a0,a1));
+      // rect from top=y1 to bottom=y0
+      run=a1;}
+    const top=Math.min(y0,y1), h=Math.max(Math.abs(y0-y1),st[2]==='tot'?1:1.5);
+    s+=`<rect x="${x}" y="${top}" width="${w}" height="${h}" rx="4" fill="${st[3]}" data-tip="<b>${st[0]}</b><br>${st[2]==='tot'?f0(st[1])+' т':sgn(st[1])+' т'}"/>`;
+    const lbl=st[2]==='tot'?f0(st[1]):sgn(st[1]);
+    s+=`<text x="${x+w/2}" y="${top-7}" text-anchor="middle" fill="#f0efec" font-size="13" font-weight="600">${lbl}</text>`;
+    s+=`<text x="${x+w/2}" y="${H-B+20}" text-anchor="middle" fill="#c3c2b7" font-size="12.5">${st[0]}</text>`;
+    if(i<steps.length-1) s+=`<line x1="${x+w}" x2="${x+w+pad}" y1="${y(run)}" y2="${y(run)}" stroke="#4a4a46" stroke-dasharray="2 3"/>`;
+  });
+  s+=`<text x="${L}" y="${H-6}" fill="#aeada4" font-size="11.5">Ось начинается с ${f0(lo)} т, чтобы были видны ступени. Базу и план это не меняет.</text>`;
+  $('#wf').innerHTML=s;
+}
+
+/* ---------- render: rail ---------- */
+function fillRange(el){const mn=+el.min,mx=+el.max,v=+el.value;el.style.setProperty('--p',((v-mn)/(mx-mn)*100)+'%');}
+function syncInputs(){
+  $$('.tog').forEach(b=>{const on=S.on[b.dataset.lv];b.setAttribute('aria-checked',on);b.querySelector('span').textContent=on?'Включён':'Выключен';b.closest('.lever').classList.toggle('off',!on);});
+  $('#rK').value=S.k;$('#vK').textContent=f2(S.k).replace('.',',');
+  $('#rOrg').value=S.org;$('#vOrg').textContent=(S.org>0?'+':'')+S.org+'%';
+  $('#rMin').value=S.minAkb;$('#vMin').textContent=S.minAkb;
+  $('#cOnlyOkb').checked=S.onlyOkb;$('#cCap').checked=S.cap;
+  $$('#fos .chip').forEach(c=>c.setAttribute('aria-pressed',S.fo.has(c.dataset.fo)));
+  $$('#seg1 button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.m===S.l1.mode));
+  $('#l1mult').hidden=S.l1.mode!=='mult';$('#l1share').hidden=S.l1.mode!=='share';
+  $('#rMult').value=S.l1.mult;$('#vMult').textContent='×'+f2(S.l1.mult);
+  $('#rShare').value=Math.round(S.l1.share*100);$('#vShare').textContent=S.l1.share>0?Math.round(S.l1.share*100)+'%':'выкл.';
+  $('#rSku').value=S.l2.t||1;$('#vSku').textContent=S.l2.t>0?f2(S.l2.t):'выкл.';
+  $('#rEff').value=Math.round(S.l2.eff*100);$('#vEff').textContent=Math.round(S.l2.eff*100)+'%';
+  $$('#mix input').forEach(inp=>{const g=+inp.dataset.g;inp.value=Math.round(S.l3[g]*100);inp.closest('.mixrow').querySelector('.pv').textContent=S.l3[g]>0?Math.round(S.l3[g]*100)+'%':'—';});
+  $$('input[type=range]').forEach(fillRange);
+  $$('#presets .chip').forEach(c=>c.setAttribute('aria-pressed',c.dataset.p===S.preset));
+}
+const L3X=new Set(['Прочее','Не определён']);
+function buildRail(){
+  $('#fos').innerHTML=FOS.map(f=>`<button class="chip" data-fo="${f}" aria-pressed="true" ${f==='Вне карты'?'title="Дистры из регионов, которых нет в матрице (например, Беларусь, Казахстан)"':''}>${f}</button>`).join('');
+  $('#mix').innerHTML=P.map((p,g)=>L3X.has(p)?'':`<div class="mixrow"><div class="nm">${esc(pn(g))}<i>сейчас ${pc(NET.pen[g])}</i></div><div class="tick" style="--cur:calc(${Math.min(100,NET.pen[g]*100)}% - 1px)"><input type="range" data-g="${g}" min="0" max="100" step="5" value="0" style="--c:var(--prod)" aria-label="Доля АКБ с продуктом ${esc(pn(g))}"></div><div class="pv">—</div></div>`).join('');
+}
+function renderRailFacts(){
+  const a=R.agg, rows=R.rows;
+  const okbRows=rows.filter(r=>r.okb);
+  const sA0=okbRows.reduce((s,r)=>s+r.A0,0), sA1=okbRows.reduce((s,r)=>s+r.A1,0), sO=okbRows.reduce((s,r)=>s+r.okb,0);
+  $('#f1').innerHTML=`<div>АКБ сейчас <b>${f0(a.akb0)}</b></div><div>АКБ после <b>${f0(a.akb1)}</b></div><div>Доля АКБ/ОКБ сейчас <b>${pc(sA0/sO,1)}</b></div><div>Доля АКБ/ОКБ после <b>${pc(sA1/sO,1)}</b></div><div>Дистров без ОКБ <b>${rows.filter(r=>!r.okb).length}</b></div><div>ОКБ меньше АКБ <b>${rows.filter(r=>r.okb&&r.A0>r.okb).length}</b></div>`;
+  const w0=rows.reduce((s,r)=>s+r.A0*r.S0,0)/a.akb0, w1=rows.reduce((s,r)=>s+r.A1*r.S1,0)/a.akb1;
+  $('#f2').innerHTML=`<div>Ср. SKU на точку сейчас <b>${f2(w0)}</b></div><div>После всех рычагов <b>${f2(w1)}</b></div><div>Медиана / топ-25% / лучший <b>${f2(SKUT.med)} / ${f2(SKUT.p75)} / ${f2(SKUT.max)}</b></div><div>Уже на уровне цели или выше <b>${S.l2.t>0?rows.filter(r=>r.S0>=S.l2.t).length:'—'}</b></div>`;
+}
+function renderLeaders(){
+  const L=D.filter(d=>d.akb>=50).sort((a,b)=>b.sku-a.sku).slice(0,5);
+  $('#leadSku').innerHTML=L.map(d=>`<li><button data-open="${d.i}"><span class="n">${esc(d.name)}</span><span>АКБ ${f0(d.akb)}</span><b>${f2(d.sku)}</b></button></li>`).join('');
+}
+
+/* ---------- render: tab dist ---------- */
+const COLS=[
+ ['name','Дистрибьютор','l',r=>r.d.name.toLowerCase(),'25%'],
+ ['okb','ОКБ',0,r=>r.okb||-1,'6%'],
+ ['A0','АКБ',0,r=>r.A0,'7%'],
+ ['sh0','Доля ОКБ',0,r=>isNaN(r.sh0)?-1:r.sh0,'9%'],
+ ['S0','Ср. SKU',0,r=>r.S0,'7%'],
+ ['V0','База, т',0,r=>r.V0,'7.5%'],
+ ['d1','+АКБ',0,r=>r.d1,'7%'],
+ ['d3','+Продукты',0,r=>r.d3,'8%'],
+ ['d2','+SKU',0,r=>r.d2,'6.5%'],
+ ['dPlan','Прирост, т',0,r=>r.dPlan,'9%'],
+ ['plan','План, т',0,r=>r.plan,'7.5%']];
+function visibleRows(){
+  const q=S.q.trim().toLowerCase();
+  let rows=R.rows.filter(r=>S.fo.has(r.d.fo)&&(!q||(r.d.name+' '+r.d.reg).toLowerCase().includes(q)));
+  const c=COLS.find(c=>c[0]===S.sort.k)||COLS[10];
+  rows.sort((a,b)=>{const x=c[3](a),y=c[3](b);return (x<y?-1:x>y?1:0)*S.sort.dir});
+  return rows;
+}
+function renderStats(){
+  $('#statsCap').textContent='Плитки и данные ниже — по дистрам: '+(S.fo.size===FOS.length?'все округа':[...S.fo].join(', '))+'. Итог в шапке всегда по всей компании.';
+  const rows=R.rows.filter(r=>S.fo.has(r.d.fo)), okb=rows.filter(r=>r.okb);
+  const A0=rows.reduce((s,r)=>s+r.A0,0), A1=rows.reduce((s,r)=>s+r.A1,0);
+  const sO=okb.reduce((s,r)=>s+r.okb,0), sA=okb.reduce((s,r)=>s+r.A0,0), sA1=okb.reduce((s,r)=>s+r.A1,0);
+  const w0=rows.reduce((s,r)=>s+r.A0*r.S0,0)/A0, w1=rows.reduce((s,r)=>s+r.A1*r.S1,0)/A1, over=rows.filter(r=>r.okb&&r.A0>r.okb);
+  const base=rows.reduce((s,r)=>s+r.V0,0)||1, plan=rows.reduce((s,r)=>s+r.plan,0);
+  const top5=[...rows].sort((x,y)=>y.dPlan-x.dPlan).slice(0,5).reduce((s,r)=>s+r.dPlan,0);
+  const tot=rows.reduce((s,r)=>s+r.dPlan,0);
+  const st=[['Дистрибьюторов',f0(rows.length),`с ОКБ: ${okb.length}`],['Объём, т',f0(base),'→ '+f0(plan)],['АКБ, точек',f0(A0),'→ '+f0(A1)],['Доля АКБ/ОКБ',pc(sA/sO,1),'→ '+pc(sA1/sO,1)],['Ср. SKU на точку',f2(w0),(w1>w0+.004?'→ '+f2(w1):'взвешено по АКБ')],['ОКБ меньше АКБ',f0(over.length),'дистров, '+pc(over.reduce((s,r)=>s+r.V0,0)/base)+' объёма'],['Топ-5 дистров дают',tot>0?pc(top5/tot):'—','прироста']];
+  $('#stats').innerHTML=st.map(s=>`<div class="stat"><div class="l">${s[0]}</div><div class="n">${s[1]}<small class="${String(s[2]).startsWith('→')?'aft':''}">${s[2]}</small></div></div>`).join('');
+}
+function renderTable(){
+  $('#tbl thead').innerHTML='<tr>'+COLS.map(c=>`<th class="${c[2]==='l'?'l':''}" style="width:${c[4]}" data-k="${c[0]}" ${S.sort.k===c[0]?`aria-sort="${S.sort.dir<0?'descending':'ascending'}"`:''}>${c[1]}</th>`).join('')+'</tr>';
+  const rows=visibleRows();
+  const nOut=rows.filter(r=>!r.inScope).length;const sel=S.fo.size===FOS.length?'все округа':[...S.fo].join(', ');$('#cnt').textContent=`Показано ${rows.length} из ${R.rows.length} · ${sel}`+(nOut?`. Бледные строки (${nOut}) вне охвата рычагов`:'');
+  $('#tbl tbody').innerHTML=rows.map(r=>{
+    const d=r.d;
+    const ov=S.ov[d.i]&&Object.keys(S.ov[d.i]).length?' •':'';
+    const G=v=>v>.05?'+'+f1(v):'—';
+    const out=!r.inScope&&!(S.ov[d.i]&&(S.ov[d.i].akb!=null||S.ov[d.i].sku!=null||S.ov[d.i].p));
+    return `<tr data-open="${d.i}" tabindex="0" class="${out?'out':''}" ${out?'title="Вне охвата рычагов: мин. АКБ или фильтр «только с ОКБ»"':''}><td class="nm" title="${esc(d.name)} · ${esc(d.reg)}"><span class="t">${esc(d.name)}${ov}</span><span class="s2">${esc(d.reg)} · ${esc(d.fo)}</span></td>
+    <td>${r.okb?(r.A0>r.okb?`<span class="noy" title="АКБ из data больше ОКБ из матрицы: проверьте ОКБ или определение АКБ">${f0(r.okb)} !</span>`:f0(r.okb)):'<span class="noy" title="ОКБ не найден — добавьте через «Загрузить ОКБ» или в карточке">нет</span>'}</td>
+    <td>${f0(r.A0)}${r.A1>r.A0+.5?`<span class="s2 pos">→ ${f0(r.A1)}</span>`:''}</td>
+    <td>${isNaN(r.sh0)?'—':pc(r.sh0,1)}${!isNaN(r.sh1)&&r.sh1>r.sh0+.0005?`<span class="s2 pos">→ ${pc(r.sh1,1)}</span>`:''}</td>
+    <td>${f2(r.S0)}${r.S1>r.S0+.004?`<span class="s2 pos">→ ${f2(r.S1)}</span>`:''}</td><td>${f1(r.V0)}</td>
+    <td>${G(r.d1)}</td><td>${G(r.d3)}</td><td>${G(r.d2)}</td>
+    <td><b>${G(r.dPlan)}</b>${r.dPlan>.05?`<span class="s2">${pc(r.dPct,0)}</span>`:''}</td><td><b>${f1(r.plan)}</b></td></tr>`}).join('');
+}
+
+/* ---------- render: map ---------- */
+function renderScatter(){
+  const W=880,H=470,L=58,Rr=20,T=14,B=48, mv=S.mapView;
+  $$('#mapView button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===mv));
+  $('#mapHint').textContent={now:'Как дистры расположены сейчас. Размер пузыря — объём базы 2026. Левее и ниже — больше запаса по охвату и ассортименту.',
+    after:'Положение дистров после рычагов. Размер пузыря — объём плана, цвет — рычаг, который дал больше всего. Серые — без изменений.',
+    shift:'Серый контур — где дистр был, закрашенный — где стал, размер показывает рост объёма. Тонкие линии только у 25 дистров с наибольшим приростом.'}[mv]+' Нажмите на пузырь, чтобы открыть дистра.';
+  const pts=R.rows.filter(r=>r.okb&&S.fo.has(r.d.fo));
+  {const mvd=pts.filter(r=>r.dPlan>.05), b0=pts.reduce((s,r)=>s+r.V0,0), p0=pts.reduce((s,r)=>s+r.plan,0);
+   $('#mapSum').textContent=`Дистров на карте: ${pts.length} (только с известным ОКБ). Изменились: ${mvd.length}. Объём ${f0(b0)} → ${f0(p0)} т (${p0>=b0?'+':'−'}${f0(Math.abs(p0-b0))} т). Размер пузыря — объём в тоннах, шкала одна на все режимы.`+(mv==='now'&&mvd.length?' Режим «Сейчас» рычаги не показывает: переключите на «После рычагов».':'');}
+  const xs=v=>L+(Math.min(3.2,Math.max(1,v))-1)/2.2*(W-L-Rr);
+  const YM=1.5, ys=v=>T+(H-T-B)*(1-Math.min(YM,v)/YM);
+  const vmax=Math.max(...pts.map(r=>r.V0),1), rad=v=>Math.min(38,3+Math.sqrt(Math.max(0,v)/vmax)*21);
+  let s='';
+  for(let i=0;i<=6;i++){const v=i/4;s+=`<line x1="${L}" x2="${W-Rr}" y1="${ys(v)}" y2="${ys(v)}" stroke="${v===1?'#7a6a3a':'#2c2c2a'}" ${v===1?'stroke-dasharray="5 4"':''}/><text x="${L-8}" y="${ys(v)+4}" text-anchor="end" fill="#aeada4" font-size="11.5">${Math.round(v*100)}%</text>`;}
+  for(let v=1;v<=3.2;v+=.5){s+=`<line x1="${xs(v)}" x2="${xs(v)}" y1="${T}" y2="${H-B}" stroke="#222220"/><text x="${xs(v)}" y="${H-B+18}" text-anchor="middle" fill="#aeada4" font-size="11.5">${f1(v)}</text>`;}
+  s+=`<text x="${W-Rr}" y="${ys(1)-6}" text-anchor="end" fill="#b79a4a" font-size="11.5">100% ОКБ. Выше — АКБ из data больше ОКБ из матрицы</text>`;
+  s+=`<text x="${(L+W-Rr)/2}" y="${H-8}" text-anchor="middle" fill="#c3c2b7" font-size="12.5">Средний SKU на точку</text>`;
+  s+=`<text transform="translate(14 ${(T+H-B)/2}) rotate(-90)" text-anchor="middle" fill="#c3c2b7" font-size="12.5">Доля АКБ от ОКБ</text>`;
+  const mx=SKUT.med; s+=`<line x1="${xs(mx)}" x2="${xs(mx)}" y1="${T}" y2="${H-B}" stroke="#5d5c57" stroke-dasharray="4 4"/><text x="${xs(mx)+5}" y="${T+11}" fill="#aeada4" font-size="11.5">медиана SKU ${f2(mx)}</text>`;
+  const moved=r=>Math.abs(r.sh1-r.sh0)>.002||Math.abs(r.S1-r.S0)>.004||r.dPlan>.05;
+  const colOf=r=>!moved(r)?'#5d5c57':(r.d1>=Math.max(r.d2,r.d3)?C.akb:(r.d3>=r.d2?C.prod:C.sku));
+  const order=[...pts].sort((a,b)=>b.plan-a.plan);
+  if(mv==='shift'){
+    const top=new Set([...pts].filter(moved).sort((a,b)=>b.dPlan-a.dPlan).slice(0,25).map(r=>r.i));
+    for(const r of order){ if(!moved(r)) continue;
+      if(top.has(r.i)) s+=`<line x1="${xs(r.S0)}" y1="${ys(r.sh0)}" x2="${xs(r.S1)}" y2="${ys(r.sh1)}" stroke="#a9a89f" stroke-opacity=".28" stroke-width="1" stroke-dasharray="3 3"/>`;
+      s+=`<circle cx="${xs(r.S0)}" cy="${ys(r.sh0)}" r="${rad(r.V0)}" fill="none" stroke="#aeada4" stroke-opacity=".55" stroke-width="1"/>`;}
+  }
+  const nm=R.rows.filter(r=>!r.okb).length;
+  for(const r of order){
+    const after=mv!=='now';
+    const X=after?r.S1:r.S0, Y=after?r.sh1:r.sh0, V=after?r.plan:r.V0;
+    const col=after?colOf(r):'#6b6a64', op=!r.inScope?.22:(after?(moved(r)?.85:.5):.6);
+    const tipH=`<b>${esc(r.d.name)}</b><br>${esc(r.d.reg)}<br>Объём ${f0(r.V0)} → <b>${f0(r.plan)} т</b>${r.dPlan>.05?' (+'+pc(r.dPct)+')':''}<br>АКБ ${f0(r.A0)}${r.A1>r.A0+.5?' → '+f0(r.A1):''} из ОКБ ${f0(r.okb)}<br>Доля ${pc(r.sh0,1)}${r.sh1>r.sh0+.0005?' → '+pc(r.sh1,1):''} · SKU ${f2(r.S0)}${r.S1>r.S0+.004?' → '+f2(r.S1):''}`;
+    s+=`<circle cx="${xs(X)}" cy="${ys(Y)}" r="${rad(V)}" fill="${col}" fill-opacity="${op}" stroke="#121211" stroke-width="1.5" data-open="${r.i}" data-tip="${esc(tipH)}" style="cursor:pointer"/>`;
+  }
+  s+=`<text x="${W-Rr}" y="${H-8}" text-anchor="end" fill="#aeada4" font-size="11.5">Без ОКБ на карте нет: ${nm}. Выше 150% — на границе</text>`;
+  $('#scatter').innerHTML=s;
+}
+
+/* ---------- render: bars ---------- */
+function barRow(name,o,max,extra){
+  const seg=[['base',o.base,'#5d5c57','База'],['org',o.org||0,C.org,'Органика'],['akb',o.d1,C.akb,'АКБ'],['prod',o.d3,C.prod,'Продукты'],['sku',o.d2,C.sku,'SKU']];
+  const tot=seg.reduce((s,x)=>s+x[1],0), d=tot-o.base;
+  const tipH=`<b>${esc(name)}</b><br>База ${f0(o.base)} т<br>`+seg.slice(1).filter(x=>Math.abs(x[1])>.05).map(x=>`${x[3]} ${sgn(x[1])} т`).join('<br>')+`<br><b>План ${f0(tot)} т</b>${extra?'<br>'+extra:''}`;
+  return `<div class="brow" data-tip="${esc(tipH)}"><div class="nm" title="${esc(name)}">${esc(name)}</div><div class="track">${seg.map(x=>x[1]>.01?`<i style="width:${x[1]/max*100}%;background:${x[2]}"></i>`:'').join('')}</div><div class="val"><b>${f0(tot)}</b> т${d>.5?` <span class="pos">+${f0(d)}</span>`:''}</div></div>`;
+}
+function renderBars(){
+  const a=R.agg;
+  const foT={};TR.forEach((tr,i)=>{const x=a.reg[i];if(!(x.base>0))return;const f=tr[1];const o=foT[f]||(foT[f]={base:0,org:0,d1:0,d2:0,d3:0,a:0});o.base+=x.base;o.org+=x.org||0;o.d1+=x.d1;o.d2+=x.d2;o.d3+=x.d3;o.a+=x.a;});
+  const fo=Object.entries(foT).sort((x,y)=>(y[1].base+y[1].d1+y[1].d2+y[1].d3)-(x[1].base+x[1].d1+x[1].d2+x[1].d3));
+  const mx=Math.max(...fo.map(([,o])=>o.base+o.org+o.d1+o.d2+o.d3),1);
+  $('#barsFo').innerHTML=fo.map(([k,o])=>barRow(k==='—'?'ФО не определён':k,o,mx)).join('');
+  const regs=TR.map((t,i)=>({t,i,o:a.reg[i]})).filter(x=>x.o.base>0.01).sort((x,y)=>(y.o.d1+y.o.d2+y.o.d3+(y.o.org||0))-(x.o.d1+x.o.d2+x.o.d3+(x.o.org||0))||y.o.base-x.o.base).slice(0,25);
+  const mr=Math.max(...regs.map(x=>x.o.base+(x.o.org||0)+x.o.d1+x.o.d2+x.o.d3),1);
+  $('#regHint').textContent='Точки рынка и объём рынка берутся из «Матрицы АКБ + рынок». Один и тот же адрес у двух дистров считается дважды, поэтому доля АКБ от точек рынка — верхняя оценка.';
+  $('#barsReg').innerHTML=regs.map(x=>{const mk=x.t[2]?`<br>Точек рынка ${f0(x.t[2])}, АКБ ${f0(x.o.a)} (${pc(x.o.a/x.t[2],1)}), рынок ${f0(x.t[3])} т`:'';return barRow(x.t[0]==='Не указан'?'Регион точки не указан':x.t[0],x.o,mr,mk)}).join('');
+  const pr=a.prod.map((o,g)=>({g,o})).sort((x,y)=>(y.o.base+y.o.org+y.o.d1+y.o.d2+y.o.d3)-(x.o.base+x.o.org+x.o.d1+x.o.d2+x.o.d3));
+  const mp=Math.max(...pr.map(x=>x.o.base+x.o.org+x.o.d1+x.o.d2+x.o.d3),1);
+  $('#barsProd').innerHTML=pr.map(x=>barRow(pn(x.g),x.o,mp)).join('');
+  $('#barsPen').innerHTML=P.map((p,g)=>({g,pen:NET.pen[g]})).sort((x,y)=>y.pen-x.pen).map(x=>{const g=x.g;
+    return `<div class="brow" data-tip="<b>${esc(pn(g))}</b><br>Возят в ${pc(NET.pen[g],1)} АКБ<br>${f1(NET.kgTT[g]*S.k)} кг на точку в год<br>${f2(NET.s[g])} SKU на точку, где возят"><div class="nm">${esc(pn(g))}</div><div class="track"><i style="width:${Math.max(.5,NET.pen[g]*100)}%;background:#5d5c57"></i></div><div class="val"><b>${pc(NET.pen[g],1)}</b> · ${f0(NET.kgTT[g]*S.k)} кг/ТТ</div></div>`}).join('');
+}
+
+/* ---------- drawer ---------- */
+let openI=null;
+let DV='prod', skuAll=false;
+function openDrawer(i){
+  openI=i;const d=D[i];skuAll=false;
+  $('#dName').textContent=d.name;$('#dSub').textContent=d.reg+' · '+d.fo+(d.mname?' · ОКБ из строки «'+d.mname+'»':'');
+  const ov=S.ov[i]||{};
+  const carried=new Set(d.skus.map(x=>x[0]));
+  const add=Object.entries(DATA.cat).filter(([id])=>!carried.has(+id)).map(([id,c])=>({id,n:c[0],g:c[1],kg:c[2],pairs:c[3],nd:c[4]})).sort((a,b)=>b.pairs-a.pairs).slice(0,8);
+  $('#dBody').innerHTML=`<div id="dStats"></div>
+   <h4>Свои допущения для этого дистра</h4>
+   <div class="note">Пусто — работает общий рычаг. Заполненное поле действует даже вне охвата, но не работает, если сам рычаг выключен.${['akb','prod','sku'].filter(k=>!S.on[k]).length?` <span class="noy">Сейчас выключены: ${['akb','prod','sku'].filter(k=>!S.on[k]).map(k=>({akb:'АКБ',prod:'Продукты',sku:'SKU'}[k])).join(', ')}.</span>`:''}</div>
+   <div class="ovrow"><span>ОКБ, точек ${d.okb?'':'<span class="noy">(не найден)</span>'}</span><input type="number" id="oOkb" min="0" step="10" placeholder="нет" value="${ov.okb??d.okb??''}"></div>
+   <div class="ovrow"><span>АКБ после, точек (сейчас ${f0(d.akb)})</span><input type="number" id="oAkb" min="1" step="10" placeholder="общий" value="${ov.akb??''}"></div>
+   <div class="ovrow"><span>Цель по SKU на точку (сейчас ${f2(d.sku)})</span><input type="number" id="oSku" min="1" max="6" step="0.05" placeholder="общая" value="${ov.sku??''}"></div>
+   <div class="row" style="justify-content:space-between;margin-top:18px"><h4 style="margin:0">Что возит дистр</h4><div class="seg" id="dView" role="group" aria-label="Вид"><button data-v="prod">Продукты</button><button data-v="sku">SKU (${d.skus.length})</button></div></div>
+   <div id="dMixWrap"></div>
+   <div class="row"><button class="btn sm" id="oReset">Убрать мои допущения</button></div>
+   <h4>Что добавить по SKU</h4>
+   <div class="note">Позиции, которых у дистра нет, отсортированы по охвату сети. Это ориентир для разговора, в расчёт они не заходят.</div>
+   <div class="addlist">${add.map(a=>`<div><span>${esc(a.n)}<br><span class="muted">${esc(pn(a.g))}</span></span><span class="muted">${a.nd} дистров</span><span class="muted">${f0(a.kg/1000)} т</span></div>`).join('')}</div>`;
+  fillDMix();
+  $('#drawer').classList.add('open');$('#scrim').classList.add('on');$('#drawer').setAttribute('aria-hidden','false');
+  $('#drawer .body').scrollTop=0;
+  updateDrawer();
+}
+function fillDMix(){
+  const d=D[openI], ov=S.ov[openI]||{}, w=$('#dMixWrap');
+  $$('#dView button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===DV));
+  if(DV==='sku'){
+    const list=d.skus, shown=skuAll?list:list.slice(0,25), tot=d.kg;
+    w.innerHTML=`<div class="note">Все позиции дистра: тонн в год, в скольких точках стоит и какую долю АКБ это даёт.</div>
+    <div class="addlist">${shown.map(([id,kg,n])=>{const c=DATA.cat[id]||['SKU '+id,0];return `<div style="grid-template-columns:1fr 70px 78px"><span>${esc(c[0])}<br><span class="muted">${esc(pn(c[1]))} · ${pc(kg/tot)} объёма</span><span style="display:block;height:4px;margin-top:4px;border-radius:2px;background:var(--prod);width:${Math.max(2,Math.min(100,n/d.akb*100))}%"></span></span><span style="text-align:right">${pc(n/d.akb)}<br><span class="muted">${f0(n)} тт</span></span><span style="text-align:right"><b>${f1(kg*S.k/1000)}</b> т<br><span class="muted">${f0(kg*S.k/n)} кг/тт</span></span></div>`}).join('')}</div>
+    ${list.length>25?`<div class="row"><button class="btn sm" id="skuMore">${skuAll?'Свернуть':'Показать все '+list.length}</button></div>`:''}`;
+  }else{
+    w.innerHTML=`<div class="note">Доля АКБ, где дистр возит продукт. Двигайте ползунок, чтобы задать свою цель для этого дистра.</div><div class="mix" id="dMix">${P.map((p,g)=>{const p0=d.nP[g]/d.akb;if(L3X.has(p)||(!(p0>0)&&NET.pen[g]<.002))return '';const v=(ov.p&&ov.p[g]!=null)?Math.round(ov.p[g]*100):'';return `<div class="mixrow"><div class="nm">${esc(pn(g))}<i>сейчас ${pc(p0)} · сеть ${pc(NET.pen[g])}</i></div><div class="tick" style="--cur:calc(${Math.min(100,p0*100)}% - 1px)"><input type="range" data-g="${g}" min="0" max="100" step="5" value="${v===''?Math.round(p0*100/5)*5:v}" style="--c:var(--prod)" aria-label="${esc(pn(g))}"></div><div class="pv">${v===''?'—':v+'%'}</div></div>`}).join('')}</div>`;
+    $$('#dMix input').forEach(fillRange);
+  }
+}
+function updateDrawer(){
+  if(openI==null)return;const r=R.rows[openI],d=r.d;
+  $('#dStats').innerHTML=`<div class="dgrid"><div><div class="l">База, т/год</div><div class="n">${f1(r.V0)}</div></div><div><div class="l">План, т</div><div class="n">${f1(r.plan)}</div></div><div><div class="l">Прирост</div><div class="n">${r.dPlan>.05?'+'+f1(r.dPlan)+' ('+pc(r.dPct)+')':'—'}</div></div>
+   <div><div class="l">АКБ</div><div class="n">${f0(r.A0)}${r.A1>r.A0+.5?' → '+f0(r.A1):''}</div></div><div><div class="l">Доля от ОКБ</div><div class="n">${isNaN(r.sh0)?'—':pc(r.sh0,1)+(r.sh1>r.sh0+.0005?' → '+pc(r.sh1,1):'')}</div></div><div><div class="l">Ср. SKU</div><div class="n">${f2(r.S0)}${r.S1>r.S0+.004?' → '+f2(r.S1):''}</div></div></div>
+   <div class="legend" style="margin:10px 0 4px"><span><em style="background:var(--akb)"></em>АКБ ${sgn(r.d1)}</span><span><em style="background:var(--prod)"></em>Продукты ${sgn(r.d3)}</span><span><em style="background:var(--sku)"></em>SKU ${sgn(r.d2)}</span><span>т/год</span></div>
+   <h4>По продуктам</h4><div class="bars">${P.map((p,g)=>({g,b:r.V0g[g],d1:r.V1g[g]-r.V0g[g],d3:r.d3g[g],d2:r.d2g[g]})).filter(x=>x.b+x.d1+x.d3+x.d2>.01).sort((a,b)=>(b.b+b.d1+b.d3+b.d2)-(a.b+a.d1+a.d3+a.d2)).map(x=>barRow(pn(x.g),{base:x.b,d1:x.d1,d2:x.d2,d3:x.d3},Math.max(r.V0g.reduce((m,v,g)=>Math.max(m,v+r.V1g[g]-v+r.d3g[g]+r.d2g[g]),0.01)),'')).join('')}</div>`;
+}
+function closeDrawer(){openI=null;$('#drawer').classList.remove('open');$('#scrim').classList.remove('on');$('#drawer').setAttribute('aria-hidden','true');}
+function setOv(i,key,val){const o=ovOf(i);if(val==null||val===''||isNaN(val))delete o[key];else o[key]=val;if(!Object.keys(o).length||(Object.keys(o).length===1&&o.p&&!Object.keys(o.p).length))delete S.ov[i];}
+
+/* ---------- main render ---------- */
+let raf=0;
+function update(){cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>{R=calc();renderHero();renderRailFacts();
+  if(S.tab!=='help')renderStats();
+  if(S.tab==='dist')renderTable();
+  if(S.tab==='map')renderScatter();
+  if(S.tab==='reg'||S.tab==='prod')renderBars();
+  updateDrawer();});}
+function setTab(t){S.tab=t;$('#stats').hidden=t==='help';$('#statsCap').hidden=t==='help';$$('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===t));['dist','map','reg','prod','help'].forEach(x=>$('#tab-'+x).hidden=x!==t);update();}
+
+/* ---------- presets ---------- */
+const ix=n=>P.indexOf(n);
+const PRESETS=[
+ ['base','Без изменений',s=>{}],
+ ['cons','Осторожный',s=>{s.l1.mult=1.2;s.l2.t=SKUT.med;s.l2.eff=.7}],
+ ['target','Целевой',s=>{s.l1.mult=1.5;s.l2.t=SKUT.p75;s.l2.eff=.8;s.l3[ix('Маскарпоне')]=.1;s.l3[ix('Милетто')]=.5;}],
+ ['aggr','Агрессивный',s=>{s.l1.mult=2;s.l2.t=SKUT.max;s.l2.eff=.9;s.l3[ix('Маскарпоне')]=.3;s.l3[ix('Милетто')]=.6;s.l3[ix('FriendChef (творожные сыры)')]=.2;s.l3[ix('Йогурт')]=.15}]];
+function applyPreset(id){const keep={fo:S.fo,minAkb:S.minAkb,onlyOkb:S.onlyOkb,q:S.q,tab:S.tab,sort:S.sort,ov:S.ov,mapView:S.mapView};S=Object.assign(DEF(),keep);S.preset=id;PRESETS.find(p=>p[0]===id)[2](S);syncInputs();update();}
+$('#presets').insertAdjacentHTML('beforeend',PRESETS.map(p=>`<button class="chip" data-p="${p[0]}" aria-pressed="false">${p[1]}</button>`).join('')+'<span class="note" style="margin-left:6px">Заготовки для старта — все цифры можно менять.</span><button class="chip" id="toHelp" style="border-style:dashed">Не понятно, что к чему? Как работать</button>');
+$('#presets').addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(b)applyPreset(b.dataset.p)});
+
+/* ---------- events ---------- */
+buildRail();
+function enable(k){S.on[k]=true;}
+function userChange(){S.preset='';$$('#presets .chip').forEach(c=>c.setAttribute('aria-pressed','false'));}
+$('#rK').oninput=e=>{S.k=+e.target.value;userChange();syncInputs();update();};
+$('#rOrg').oninput=e=>{S.org=+e.target.value;userChange();syncInputs();update();};
+$('#rMin').oninput=e=>{S.minAkb=+e.target.value;userChange();syncInputs();update();};
+$('#cOnlyOkb').onchange=e=>{S.onlyOkb=e.target.checked;userChange();update();};
+$('#cCap').onchange=e=>{S.cap=e.target.checked;userChange();update();};
+$('#fos').onclick=e=>{const b=e.target.closest('[data-fo]');if(!b)return;const f=b.dataset.fo;
+  if(S.fo.size===FOS.length){S.fo=new Set([f]);}else if(S.fo.has(f)){S.fo.delete(f);if(!S.fo.size)S.fo=new Set(FOS);}else S.fo.add(f);
+  userChange();syncInputs();update();};
+$('#seg1').onclick=e=>{const b=e.target.closest('[data-m]');if(!b)return;enable('akb');S.l1.mode=b.dataset.m;userChange();syncInputs();update();};
+$('#rMult').oninput=e=>{enable('akb');S.l1.mult=+e.target.value;userChange();syncInputs();update();};
+$('#rShare').oninput=e=>{enable('akb');S.l1.share=+e.target.value/100;userChange();syncInputs();update();};
+$('#rSku').oninput=e=>{enable('sku');S.l2.t=+e.target.value<=1.0001?0:+e.target.value;userChange();syncInputs();update();};
+$('#rEff').oninput=e=>{enable('sku');S.l2.eff=+e.target.value/100;userChange();syncInputs();update();};
+$('#skuBtns').onclick=e=>{const b=e.target.closest('[data-t]');if(!b)return;enable('sku');const t=b.dataset.t;S.l2.t=t==='off'?0:SKUT[t];userChange();syncInputs();update();};
+$('#mix').oninput=e=>{const inp=e.target.closest('input');if(!inp)return;enable('prod');S.l3[+inp.dataset.g]=+inp.value/100;userChange();syncInputs();update();};
+$('#toHelp').onclick=()=>{setTab('help');$('#tabs').scrollIntoView({behavior:'smooth'})};
+document.querySelector('.rail').addEventListener('click',e=>{const b=e.target.closest('.tog');if(!b)return;S.on[b.dataset.lv]=!S.on[b.dataset.lv];userChange();syncInputs();update();});
+$('#mapView').onclick=e=>{const b=e.target.closest('[data-v]');if(!b)return;S.mapView=b.dataset.v;renderScatter();};
+$('#tabs').onclick=e=>{const b=e.target.closest('[data-t]');if(b)setTab(b.dataset.t)};
+$('#q').oninput=e=>{S.q=e.target.value;update();};
+$('#tbl thead').onclick=e=>{const th=e.target.closest('th[data-k]');if(!th)return;const k=th.dataset.k;S.sort=S.sort.k===k?{k,dir:-S.sort.dir}:{k,dir:(k==='name'||k==='fo')?1:-1};update();};
+document.addEventListener('click',e=>{const o=e.target.closest('[data-open]');if(o&&!e.target.closest('#drawer'))openDrawer(+o.dataset.open);});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('tr[data-open]'))openDrawer(+e.target.dataset.open);if(e.key==='Escape')closeDrawer();});
+$('#dClose').onclick=closeDrawer;$('#scrim').onclick=closeDrawer;
+$('#dBody').addEventListener('input',e=>{
+  const t=e.target;if(openI==null)return;
+  if(t.id==='oOkb'){setOv(openI,'okb',t.value===''?null:+t.value);}
+  else if(t.id==='oAkb'){setOv(openI,'akb',t.value===''?null:+t.value);}
+  else if(t.id==='oSku'){setOv(openI,'sku',t.value===''?null:+t.value);}
+  else if(t.matches('#dMix input')){const o=ovOf(openI);o.p=o.p||{};o.p[+t.dataset.g]=+t.value/100;t.closest('.mixrow').querySelector('.pv').textContent=t.value+'%';fillRange(t);}
+  update();});
+$('#dBody').addEventListener('click',e=>{const v=e.target.closest('#dView [data-v]');if(v){DV=v.dataset.v;fillDMix();return;}if(e.target.id==='skuMore'){skuAll=!skuAll;fillDMix();return;}if(e.target.id==='oReset'){delete S.ov[openI];const i=openI;openDrawer(i);update();}});
+
+/* export / reset / okb */
+$('#btnReset').onclick=()=>{S=DEF();syncInputs();update();};
+$('#btnCsv').onclick=()=>{
+  const hdr=['Дистрибьютор','Регион дистра','ФО','ОКБ','АКБ','АКБ после','Доля АКБ/ОКБ','Доля после','Ср. SKU','Ср. SKU после','База 2026, т','+АКБ, т','+Продукты, т','+SKU, т','+Органика, т','План 2027, т'];
+  const rows=visibleRows().map(r=>[r.d.name,r.d.reg,r.d.fo,r.okb||'',r.A0,r.A1.toFixed(0),isNaN(r.sh0)?'':r.sh0.toFixed(4),isNaN(r.sh1)?'':r.sh1.toFixed(4),r.S0.toFixed(3),r.S1.toFixed(3),r.V0.toFixed(2),r.d1.toFixed(2),r.d3.toFixed(2),r.d2.toFixed(2),r.org.toFixed(2),r.plan.toFixed(2)]);
+  const csv='﻿'+[hdr,...rows].map(r=>r.map(v=>{let s=String(v).replace(/"/g,'""');if(typeof v==='number'||/^-?\d+\.\d+$/.test(s))s=s.replace('.',',');return '"'+s+'"'}).join(';')).join('\r\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='plan_2027_po_distram.csv';a.click();
+};
+$('#btnOkb').onclick=()=>$('#dlgOkb').showModal();$('#okbClose').onclick=()=>$('#dlgOkb').close();
+$('#okbApply').onclick=()=>{
+  const lines=$('#okbText').value.split(/\r?\n/).map(l=>l.split(/[;\t]/).map(x=>x.trim())).filter(a=>a.length>=2);let ok=0,miss=[];
+  for(const a of lines){const val=parseFloat(String(a[a.length-1]).replace(/\s/g,'').replace(',','.'));if(!(val>0))continue;
+    const name=a[0].toLowerCase(), reg=a.length>=3?a[1].toLowerCase():null;
+    const hit=D.filter(d=>d.name.toLowerCase()===name&&(!reg||d.reg.toLowerCase()===reg));
+    if(!hit.length)miss.push(a[0]);else hit.forEach(d=>{ovOf(d.i).okb=val;ok++;});}
+  $('#okbRes').textContent=`Обновлено: ${ok}`+(miss.length?`. Не найдены: ${miss.slice(0,5).join(', ')}${miss.length>5?'…':''}`:'');
+  update();};
+
+/* init */
+syncInputs();setTab('dist');renderLeaders();
+</script>
+</body>
+</html>
