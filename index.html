@@ -429,6 +429,57 @@ dialog textarea{height:180px;font-size:12.5px}
 .ana-applied{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;border:1px solid var(--axis);border-radius:8px;padding:7px 10px;margin:0 0 10px;color:var(--ink2);font-size:12.5px;background:var(--panel2)}
 .ana-applied b{color:var(--ink)}
 .ana-applied .btn{font-size:11.5px;white-space:nowrap}
+
+.ana-action{font-size:12px;font-weight:600;color:var(--ink)}
+.ana-clean #anTable .ana-action{display:block;white-space:normal;line-height:1.3}
+/* UMK_ANALYZER_COMPACT_V1 — только представление; формулы и CSV сохранены */
+.ana-clean{padding:15px 16px 16px}
+.ana-clean .ana-head{margin-bottom:9px}
+.ana-clean .ana-head h3{font-size:18px}
+.ana-clean .ana-head .hint{font-size:12.5px;margin:1px 0 0}
+.ana-clean .ana-applied{padding:6px 9px;margin-bottom:10px;font-size:12px}
+.ana-clean .ana-kpis{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:10px}
+.ana-clean .ana-kpi{padding:8px 11px}
+.ana-clean .ana-kpi .n{font-size:21px}
+.ana-clean .ana-kpi .l{font-size:12px}
+.ana-guideline{color:var(--mute);font-size:12px;line-height:1.35;margin:0 0 9px}
+.ana-clean .ana-filters{display:grid;grid-template-columns:minmax(165px,1fr) minmax(170px,230px) auto auto;gap:7px;margin-bottom:8px}
+.ana-clean .ana-filters input[type=search]{width:100%;max-width:none;min-width:0;flex:none;padding:6px 9px}
+.ana-clean .ana-filters select{width:100%;min-width:0;padding:6px 9px}
+.ana-clean .ana-filters .btn{font-size:12px;padding:6px 10px;white-space:nowrap}
+.ana-clean #anColumnsToggle[aria-pressed=true]{border-color:#91a6bc;color:var(--ink);background:#293444}
+.ana-clean .ana-summary{font-size:11.5px;margin-bottom:7px}
+.ana-clean #anCount{max-width:100%;line-height:1.4}
+.ana-clean .ana-tablewrap{max-height:65vh}
+#anTable.ana-compact{min-width:875px;width:100%;table-layout:auto;font-size:12px}
+#anTable.ana-compact th{font-size:11.5px;padding:8px 8px}
+#anTable.ana-compact td{padding:8px 8px}
+#anTable.ana-compact th:first-child,#anTable.ana-compact td:first-child{min-width:185px}
+#anTable.ana-compact th:last-child,#anTable.ana-compact td:last-child{text-align:left;min-width:160px}
+#anTable.ana-full{min-width:1460px}
+.ana-clean .ana-flag{font-size:10.5px;padding:2px 5px}
+.ana-clean .ana-detail{margin:10px 0 2px}
+.ana-clean .ana-detail[hidden]{display:none}
+.ana-extra-section{display:grid;grid-template-columns:1fr;gap:7px;margin-top:11px}
+.ana-fold{border:1px solid var(--axis);background:var(--panel2);border-radius:9px;overflow:hidden}
+.ana-fold summary{display:flex;align-items:center;position:relative;padding:9px 30px 9px 12px;cursor:pointer;font-size:13px;font-weight:600;color:var(--ink2);list-style:none;user-select:none}
+.ana-fold summary::-webkit-details-marker{display:none}
+.ana-fold summary::after{content:'+';position:absolute;right:13px;top:8px;font-size:18px;font-weight:400;color:var(--mute)}
+.ana-fold[open] summary::after{content:'−'}
+.ana-fold summary small{display:inline;font-size:11.5px;font-weight:400;color:var(--mute);margin-left:9px}
+.ana-fold summary:hover{background:#2a2a28;color:var(--ink)}
+.ana-fold[open] summary{border-bottom:1px solid var(--axis)}
+.ana-fold-body{padding:12px 13px}
+.ana-fold .ana-extra-title{font-size:12px;font-weight:600;color:var(--ink2);margin:1px 0 8px}
+.ana-fold .ana-threshold{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-bottom:14px}
+.ana-fold .ana-targets{margin-bottom:10px}
+.ana-fold #anProducts{background:var(--panel);border:1px solid var(--axis);padding:6px 9px;border-radius:7px;min-width:180px}
+.ana-fold .ana-help{font-size:12px;margin-top:10px;line-height:1.5}
+.ana-fold .ana-meta{font-size:11.5px;margin-top:11px;line-height:1.4}
+.ana-fold .ana-priority-card,.ana-fold .ana-chart{margin:0;border:0;background:transparent;padding:0}
+.ana-source-note{font-size:11px;color:var(--mute);margin:11px 0 0;line-height:1.45}
+@media(max-width:1050px){.ana-clean .ana-filters{grid-template-columns:minmax(160px,1fr) minmax(140px,1fr) auto auto}.ana-clean .ana-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:680px){.ana-clean{padding:12px}.ana-clean .ana-filters{grid-template-columns:1fr 1fr}.ana-clean .ana-filters input[type=search]{grid-column:1/-1}.ana-fold summary small{display:block;margin:1px 0 0}.ana-fold .ana-threshold{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 <body>
@@ -575,66 +626,80 @@ dialog textarea{height:180px;font-size:12.5px}
         <div class="panel"><h3>Регионы точек: топ-25 по приросту</h3><p class="hint" id="regHint"></p><div class="bars" id="barsReg"></div></div>
       </div>
       <div id="tab-analyzer" hidden>
-  <div class="panel ana-shell">
+  <div class="panel ana-shell ana-clean">
     <div class="ana-head">
-      <div><h3>Анализатор возможностей</h3><p class="hint">Где расширять присутствие, где развивать ассортимент, а где снижать риски и удерживать позиции</p></div>
+      <div><h3>Анализатор</h3><p class="hint">Где расти, где есть риски и что делать дальше</p></div>
       <div class="seg ana-mode" id="anMode" role="group" aria-label="Режим анализатора">
         <button type="button" data-am="reg" aria-pressed="true">Регионы ТТ</button>
         <button type="button" data-am="dist" aria-pressed="false">Дистрибьюторы</button>
       </div>
     </div>
-    <div class="note ana-meta" id="anMeta"></div>
-<div class="ana-applied"><span id="anAppliedFilters" role="status">Применены фильтры: все дистрибьюторы</span><button class="btn sm" type="button" id="anClearFilters" title="Сбросить округ, область, класс, режим дистрибьюторов, минимальный АКБ и условие ОКБ">Сбросить фильтры слева</button></div>
+    <div class="ana-applied"><span id="anAppliedFilters" role="status">Применены фильтры: все дистрибьюторы</span><button class="btn sm" type="button" id="anClearFilters" title="Сбросить округ, область, класс, режим дистрибьюторов, минимальный АКБ и условие ОКБ">Сбросить фильтры</button></div>
     <div class="ana-kpis" id="anKpis"></div>
+    <div class="ana-guideline">Выберите территорию слева → найдите проблему → нажмите на строку, чтобы узнать причину и действие.</div>
     <div class="ana-filters">
-      <input id="anSearch" type="search" placeholder="Найти регион или дистрибьютора" aria-label="Поиск по анализатору">
-      <select id="anFlag" aria-label="Отбор диагностических признаков">
-        <option value="all">Все территории и дистры</option>
-        <option value="attention">Требуют внимания</option>
-        <option value="risk">Риски присутствия</option>
-        <option value="noactivity">Нет вторички</option>
-        <option value="overlap">Есть пересечения ТТ</option>
-        <option value="growth">Потенциал роста</option>
+      <input id="anSearch" type="search" placeholder="Поиск по названию или региону" aria-label="Поиск по анализатору">
+      <select id="anFlag" aria-label="Показать только">
+        <option value="all">Все</option>
         <option value="high">Высокий приоритет (70+)</option>
+        <option value="growth">Возможности роста</option>
+        <option value="risk">Риски</option>
+        <option value="overlap">Общие ТТ у дистров</option>
+        <option value="noactivity">Нет вторички</option>
+        <option value="attention">Все с сигналами</option>
       </select>
-      <select id="anProducts" aria-label="Разбивка объёма">
-        <option value="cat">Столбцы: продукты</option>
-        <option value="brand">Столбцы: бренды</option>
-        <option value="none">Без товарных столбцов</option>
-      </select>
-      <button class="btn sm" id="anExport" title="Скачать текущий список анализатора с признаками и объёмами">Скачать анализ (CSV)</button>
+      <button class="btn sm" type="button" id="anColumnsToggle" aria-pressed="false" title="Показать дополнительные показатели и товарную разбивку">Все столбцы</button>
+      <button class="btn sm" id="anExport" title="Скачать все показатели выбранных строк, даже если на экране короткая таблица">Скачать CSV</button>
     </div>
-    <div class="ana-threshold" id="anThresholds">
-      <label>Низкая доля рынка, %<input type="number" data-at="market" min="0" max="100" step="1" value="10"></label>
-      <label>Низкий охват АКБ, %<input type="number" data-at="akb" min="0" max="100" step="1" value="15"></label>
-      <label>Низкий средний SKU<input type="number" data-at="sku" min="0" max="20" step="0.1" value="1.5"></label>
-      <label>Концентрация, от %<input type="number" data-at="concentration" min="0" max="100" step="5" value="75"></label>
-      <label>Пересечение ТТ, от %<input type="number" data-at="overlap" min="0" max="100" step="5" value="10"></label>
-      <label>Малые продажи, т/год<input type="number" data-at="sales" min="0" max="999999" step="10" value="50"></label>
+    <div class="ana-summary"><div id="anCount" class="note"></div><div class="note">Нажмите на строку · столбцы сортируются</div></div>
+    <div class="tablewrap ana-tablewrap"><table id="anTable" class="ana-compact"><thead></thead><tbody></tbody></table></div>
+    <div class="ana-detail" id="anDetail" hidden></div>
+    <div class="ana-extra-section">
+      <details class="ana-fold" id="anSettingsFold">
+        <summary><span>Настроить анализ <small>Пороги сигналов, целевые показатели, товарные столбцы</small></span></summary>
+        <div class="ana-fold-body">
+          <div class="ana-extra-title">Что считать низким показателем</div>
+          <div class="ana-threshold" id="anThresholds">
+            <label>Низкая доля рынка, %<input type="number" data-at="market" min="0" max="100" step="1" value="10"></label>
+            <label>Низкий охват АКБ, %<input type="number" data-at="akb" min="0" max="100" step="1" value="15"></label>
+            <label>Низкий средний SKU<input type="number" data-at="sku" min="0" max="20" step="0.1" value="1.5"></label>
+            <label>Концентрация, от %<input type="number" data-at="concentration" min="0" max="100" step="5" value="75"></label>
+            <label>Пересечение ТТ, от %<input type="number" data-at="overlap" min="0" max="100" step="5" value="10"></label>
+            <label>Малые продажи, т/год<input type="number" data-at="sales" min="0" max="999999" step="10" value="50"></label>
+          </div>
+          <div class="ana-extra-title">Цель для оценки возможности роста</div>
+          <div class="ana-targets" id="anTargets">
+            <label title="Сценарная цель для региона, не прогноз">Доля рынка, % <input type="number" data-ag="market" value="15" min="1" max="100" step="1" aria-label="Целевая доля рынка для оценки резерва"></label>
+            <label title="Сценарная цель для дистрибьютора, не прогноз">Охват ОКБ, % <input type="number" data-ag="akb" value="30" min="1" max="100" step="1" aria-label="Целевой охват ОКБ для оценки резерва"></label>
+            <span class="note">Резерв в тоннах — ориентир до цели, не прогноз. Балл приоритета 0–100 — сравнительный рейтинг.</span>
+          </div>
+          <div class="ana-extra-title">Дополнительные товарные столбцы (в подробном режиме)</div>
+          <select id="anProducts" aria-label="Разбивка объёма">
+            <option value="cat">По продуктам</option>
+            <option value="brand">По брендам</option>
+            <option value="none">Без товарных столбцов</option>
+          </select>
+          <p id="anMeta" class="note ana-meta"></p>
+          <div id="anExplanation" class="ana-help"></div>
+        </div>
+      </details>
+      <details class="ana-fold" id="anTopFold">
+        <summary><span>Топ-5 возможностей <small>Быстрый переход к самым приоритетным объектам</small></span></summary>
+        <div class="ana-fold-body"><div class="ana-priority-card" id="anTopPriority"><div class="ana-priority-items" id="anPriorityItems"></div></div></div>
+      </details>
+      <details class="ana-fold" id="anMatrixFold">
+        <summary><span>Матрица регионов <small>Показывает долю рынка, разрыв и объём рынка</small></span></summary>
+        <div class="ana-fold-body"><div id="anMatrixBox" class="ana-chart">
+          <div class="note">Горизонталь — разрыв с рынком в тоннах за год (√-шкала), вертикаль — наша доля рынка; размер круга — объём рынка. Нажмите на круг для подробностей.</div>
+          <svg id="anMatrix" viewBox="0 0 920 280" role="img" aria-label="Матрица возможностей по регионам"></svg>
+          <div class="ana-matrix-legend" aria-label="Цвета кругов">
+            <span><i style="background:#ff8a5c"></i>Нет продаж</span><span><i style="background:#5aa9ff"></i>Только первичка</span>
+            <span><i style="background:#c98500"></i>Доля ниже порога</span><span><i style="background:#199e70"></i>Доля выше порога</span>
+          </div>
+        </div></div>
+      </details>
     </div>
-    <div class="ana-targets" id="anTargets">
-      <label title="Доля регионального годового рынка, до которой рассматриваем расширение">Целевая доля рынка, % <input type="number" data-ag="market" value="15" min="1" max="100" step="1" aria-label="Целевая доля рынка для оценки резерва"></label>
-      <label title="Целевая доля АКБ от ОКБ дистрибьютора; максимум ×3 от текущего АКБ для ориентировочного расчёта">Целевой охват ОКБ, % <input type="number" data-ag="akb" value="30" min="1" max="100" step="1" aria-label="Целевой охват ОКБ для оценки резерва"></label>
-      <span class="note">Ориентир в тоннах — сценарная оценка при целевых долях; не прогноз и не дополнительный объём рынка. Балл 0–100 — относительный рейтинг внутри текущего выбора.</span>
-    </div>
-    <div id="anExplanation" class="ana-help"></div>
-    <div id="anMatrixBox" class="ana-chart">
-      <h4>Матрица региональных возможностей</h4>
-      <div class="note">По горизонтали — разрыв с рынком в тоннах за год (√-шкала для наглядности), по вертикали — текущая доля рынка. Размер круга — объём рынка. Нажмите на круг для подробностей.</div>
-      <svg id="anMatrix" viewBox="0 0 920 280" role="img" aria-label="Матрица возможностей по регионам"></svg>
-      <div class="ana-matrix-legend" aria-label="Обозначение цветов кругов">
-        <span><i style="background:#ff8a5c"></i>Коралловый — нет наших продаж</span><span><i style="background:#5aa9ff"></i>Синий — только первичка, нет вторички</span>
-        <span><i style="background:#c98500"></i>Жёлтый — доля ниже порога</span>
-        <span><i style="background:#199e70"></i>Зелёный — доля не ниже порога</span>
-      </div>
-    </div>
-    <div class="ana-priority-card" id="anTopPriority">
-      <h4>Топ-5 приоритетов роста <span class="note">· по выбранным фильтрам</span></h4>
-      <div class="ana-priority-items" id="anPriorityItems"></div>
-    </div>
-    <div class="ana-summary"><div id="anCount" class="note"></div><div class="note">Нажмите на строку для подробного разбора · заголовки сортируют</div></div>
-    <div class="tablewrap ana-tablewrap"><table id="anTable"><thead></thead><tbody></tbody></table></div>
-    <div class="ana-detail" id="anDetail"><div class="note">Выберите строку в таблице или точку на матрице, чтобы посмотреть причины и рекомендуемые действия.</div></div>
+    <div class="ana-source-note">Годовая база включает скрытую первичку и новых дистров. Уникальные ТТ и пересечения — только по детальной вторичке. <span id="anDatesShort"></span></div>
   </div>
 </div>
 
@@ -1548,7 +1613,7 @@ function closeDrawer(){openI=null;$('#drawer').classList.remove('open');$('#scri
 function setOv(i,key,val){const o=ovOf(i);if(val==null||val===''||isNaN(val))delete o[key];else o[key]=val;if(!Object.keys(o).length||(Object.keys(o).length===1&&o.p&&!Object.keys(o.p).length))delete S.ov[i];}
 
 /* UMK_ANALYZER_V1: complete analysis from scenario and distinct-TT summaries */
-const AN={mode:'reg',flag:'all',product:'cat',search:'',sort:'score',dir:-1,selected:null,rows:[],
+const AN={mode:'reg',flag:'all',product:'cat',search:'',sort:'score',dir:-1,selected:null,rows:[],compact:true,
   limits:{market:10,akb:15,sku:1.5,concentration:75,overlap:10,sales:50},targets:{market:15,akb:30}};
 const AN_DATA=DATA.analytics||{through:null,regions:{},owners:{},d:[]};
 const anDate=AN_DATA.through?AN_DATA.through.split('-').reverse().join('.'):'неизвестна';
@@ -1920,9 +1985,10 @@ function anRenderMatrix(rows){
 }
 function anRenderDetail(){
   const root=$('#anDetail');
-  if(!AN.selected){root.innerHTML='<div class="note">Нажмите на строку или круг на матрице для подробного разбора.</div>';return;}
+  if(!AN.selected){root.hidden=true;root.innerHTML='';return;}
   const r=AN.rows.find(x=>x.id===AN.selected);
-  if(!r){root.innerHTML='<div class="note">Выбранная строка не входит в текущий фильтр.</div>';return;}
+  if(!r){root.hidden=true;root.innerHTML='';return;}
+  root.hidden=false;
   const flags=r.flags.length?r.flags.map(f=>anBadge(f.t,f.c)).join(' '):anBadge('Явных сигналов нет','good');
   const breakdown=(r.priorityBreakdown||[]).map(([name,pts])=>`<span>${esc(name)}: <b>+${f1(pts)}</b></span>`).join('');
   const basis=AN.mode==='reg'
@@ -1996,20 +2062,41 @@ function anRender(){
   const overlaps=rows.filter(r=>r.dup>0).length;
   const zero=rows.filter(r=>r.flags.some(f=>f.k==='noactivity')).length;
   const kpis=AN.mode==='reg'
-    ?[['Регионов',rows.length],['Высокий приоритет',rows.filter(r=>r.score>=70).length],['Требуют внимания',attention],['Без вторички',zero],['С пересечениями ТТ',overlaps]]
-    :[['Дистрибьюторов',rows.length],['Высокий приоритет',rows.filter(r=>r.score>=70).length],['С сигналами',attention],['Без вторички',zero],['Есть общие ТТ',overlaps]];
+    ?[['Регионов',rows.length],['Приоритет 70+',rows.filter(r=>r.score>=70).length],['С сигналами',attention],['Общие ТТ',overlaps]]
+    :[['Дистрибьюторов',rows.length],['Приоритет 70+',rows.filter(r=>r.score>=70).length],['С сигналами',attention],['Общие ТТ',overlaps]];
   $('#anKpis').innerHTML=kpis.map(([label,v])=>`<div class="ana-kpi"><div class="n">${f0(v)}</div><div class="l">${esc(label)}</div></div>`).join('');
   const {fixed,prods}=anColumns(rows);
-  const cols=[...fixed,...prods.map(p=>['product:'+p.key,p.name+', т*',r=>anTon(anProductVolume(r,p)/1000),r=>anProductVolume(r,p)])];
-  const header=(key,label)=>`<th data-an-sort="${esc(key)}" title="Сортировать: ${esc(label)}" aria-sort="${AN.sort===key?(AN.dir===-1?'descending':'ascending'):'none'}">${esc(label)}</th>`;
-  $('#anTable thead').innerHTML=`<tr>${cols.map(c=>header(c[0],c[1])).join('')}<th>Сигналы / действие</th></tr>`;
+  const simpleKeys=AN.mode==='reg'
+    ?['name','score','opportunity','V0','share','tt','active']
+    :['name','score','opportunity','V0','A0','sh0','S0','territories'];
+  const cols=AN.compact?fixed.filter(c=>simpleKeys.includes(c[0])):
+    [...fixed,...prods.map(p=>['product:'+p.key,p.name+', т*',r=>anTon(anProductVolume(r,p)/1000),r=>anProductVolume(r,p)])];
+  $('#anTable').classList.toggle('ana-compact',AN.compact);
+  $('#anTable').classList.toggle('ana-full',!AN.compact);
+  $('#anColumnsToggle').setAttribute('aria-pressed',String(!AN.compact));
+  $('#anColumnsToggle').textContent=AN.compact?'Все столбцы':'Короткая таблица';
+  const shortLabels=AN.mode==='reg'
+    ?{name:'Регион / ФО',score:'Балл',opportunity:'До цели, т*',V0:'Наши, т/год',share:'Доля рынка',tt:'АКБ (ТТ)*',active:'Дистров'}
+    :{name:'Дистрибьютор / регион',score:'Балл',opportunity:'Резерв, т*',V0:'Продажи, т/год',A0:'АКБ',sh0:'АКБ / ОКБ',S0:'Ср. SKU',territories:'Регионов ТТ'};
+  const help={score:'Сравнительный балл 0–100, не вероятность успеха.',
+    opportunity:'Сценарный ориентир до целевой доли рынка или охвата АКБ, не прогноз.',
+    V0:'Годовая база: основные, скрытые и новые дистрибьюторы.',
+    tt:'Уникальные торговые точки только из детальной вторички; скрытая первичка без детализации ТТ.',
+    active:'Число основных, скрытых и новых дистрибьюторов с продажами в регионе.',
+    sh0:'Охват = АКБ / полный ОКБ дистрибьютора.',
+    S0:'Среднее количество уникальных SKU на одну торговую точку.'};
+  const header=(key,label)=>`<th data-an-sort="${esc(key)}" title="${esc(help[key]||'Нажмите, чтобы сортировать')}" aria-sort="${AN.sort===key?(AN.dir===-1?'descending':'ascending'):'none'}">${esc(AN.compact?(shortLabels[key]||label):label)}</th>`;
+  $('#anTable thead').innerHTML=`<tr>${cols.map(c=>header(c[0],c[1])).join('')}<th title="Основная рекомендация и диагностические признаки. Нажмите на строку для деталей.">Действие / сигнал</th></tr>`;
   $('#anTable tbody').innerHTML=rows.map(r=>{
     const body=cols.map((c,j)=>`<td${j===0?' class="l"':''}>${c[2](r)}</td>`).join('');
-    const marks=r.flags.length?r.flags.slice(0,2).map(f=>anBadge(f.t,f.c)).join('')
-       +(r.flags.length>2?anBadge('+'+(r.flags.length-2),'info'):''):anBadge('Без критических сигналов','good');
-    return `<tr tabindex="0" data-an-id="${esc(r.id)}" aria-label="Подробности ${esc(AN.mode==='reg'?r.reg:r.d.name)}">${body}<td style="text-align:left;min-width:210px">${marks}<span class="ana-sub">${esc(r.recommend)}</span></td></tr>`;
+    const marks=r.flags.length?r.flags.slice(0,AN.compact?1:2).map(f=>anBadge(f.t,f.c)).join('')
+       +(r.flags.length>(AN.compact?1:2)?anBadge('+'+(r.flags.length-(AN.compact?1:2)),'info'):''):(AN.compact?'':anBadge('Без критических сигналов','good'));
+    const action=`<strong class="ana-action">${esc(r.recommend)}</strong>`;
+    return `<tr tabindex="0" data-an-id="${esc(r.id)}" aria-label="Подробности ${esc(AN.mode==='reg'?r.reg:r.d.name)}">${body}<td style="text-align:left;min-width:165px">${action}${marks?`<span class="ana-sub">${marks}</span>`:''}</td></tr>`;
   }).join('')||'<tr><td colspan="30" class="note" style="text-align:left;padding:14px">Нет данных по выбранным условиям.</td></tr>';
-  $('#anCount').textContent=(AN.mode==='reg'?'Регионов ТТ':'Дистрибьюторов')+': '+f0(rows.length)+'. «До цели / Резерв АКБ, т*» — сценарный ориентир за год, не прогноз; товарные столбцы, т — объём детальной вторички по '+anDate+'.';
+  $('#anCount').textContent='Показано '+f0(rows.length)+' '+(AN.mode==='reg'?'регионов ТТ':'дистрибьюторов')+' · резерв — ориентир до цели, не прогноз';
+  $('#anDatesShort').textContent='Данные ТТ по '+anDate+'.';
+  $('#anMatrixFold').hidden=AN.mode!=='reg';
   anRenderTop(rows);anRenderMatrix(rows);anRenderDetail();
 }
 function anChangeMode(mode){
@@ -2042,6 +2129,7 @@ function anInit(){
   $('#anSearch').addEventListener('input',e=>{AN.search=e.target.value;anRender();});
   $('#anFlag').addEventListener('change',e=>{AN.flag=e.target.value;AN.selected=null;anRender();});
   $('#anProducts').addEventListener('change',e=>{AN.product=e.target.value;anRender();});
+  $('#anColumnsToggle').addEventListener('click',()=>{AN.compact=!AN.compact;if(AN.compact&&AN.sort.startsWith('product:')){AN.sort='score';AN.dir=-1;}anRender();});
   $('#anThresholds').addEventListener('input',e=>{const key=e.target.dataset.at;if(!key)return;const v=+e.target.value;
     if(isFinite(v)&&v>=0){AN.limits[key]=v;anRender();}});
   $('#anTargets').addEventListener('change',e=>{const key=e.target.dataset.ag;if(!key)return;
@@ -2064,14 +2152,14 @@ function anInit(){
 /* ---------- main render ---------- */
 let raf=0;
 function update(){cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>{R=calc();renderHero();renderRailFacts();
-  if(S.tab!=='help')renderStats();
+  if(S.tab!=='help'&&S.tab!=='analyzer')renderStats();
   if(S.tab==='dist')renderTable();
   if(S.tab==='map')renderScatter();
   if(S.tab==='reg'||S.tab==='prod')renderBars();
   if(S.tab==='gain')renderGain();
   if(S.tab==='analyzer')anRender();
   updateDrawer();});}
-function setTab(t){if(t==='help'){const fmt=x=>x?String(x).split('-').reverse().join('.'):'неизвестно';$('#helpPeriod').textContent='Период продаж: '+fmt(DATA.source?.period_from)+'—'+fmt(DATA.source?.period_to);$('#helpFactDate').textContent=fmt(DATA.source?.period_to);$('#helpAnalyticsDate').textContent=fmt(AN_DATA.through);}if(t==='analyzer'){S.geoMode=AN.mode==='reg'?'tt':'dist';closePick();updatePickers();}S.tab=t;$('#stats').hidden=t==='help';$('#statsCap').hidden=t==='help';$$('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===t));['dist','map','reg','prod','gain','analyzer','help'].forEach(x=>$('#tab-'+x).hidden=x!==t);update();}
+function setTab(t){if(t==='help'){const fmt=x=>x?String(x).split('-').reverse().join('.'):'неизвестно';$('#helpPeriod').textContent='Период продаж: '+fmt(DATA.source?.period_from)+'—'+fmt(DATA.source?.period_to);$('#helpFactDate').textContent=fmt(DATA.source?.period_to);$('#helpAnalyticsDate').textContent=fmt(AN_DATA.through);}if(t==='analyzer'){S.geoMode=AN.mode==='reg'?'tt':'dist';closePick();updatePickers();}S.tab=t;$('.hero').hidden=t==='analyzer';$('#stats').hidden=t==='help'||t==='analyzer';$('#statsCap').hidden=t==='help'||t==='analyzer';$$('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===t));['dist','map','reg','prod','gain','analyzer','help'].forEach(x=>$('#tab-'+x).hidden=x!==t);update();}
 
 /* ---------- presets ---------- */
 const ix=n=>P.indexOf(n);
